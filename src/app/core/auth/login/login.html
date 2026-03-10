@@ -1,0 +1,93 @@
+<form
+  [formGroup]="loginForm"
+  class="d-flex flex-column justify-content-center align-items-start gap-3 mt-4 mx-2"
+  (ngSubmit)="onSubmit()"
+>
+  <!-- username Field -->
+  <div class="d-flex justify-content-start align-items-center gap-1 w-100">
+    <!-- Icon -->
+    <div
+      class="d-flex justify-content-center align-items-center p-2 rounded-2"
+      style="background-color: #f0f0f0"
+    >
+      <lucide-icon name="at-sign" />
+    </div>
+
+    <!-- UserName Input -->
+    <input
+      type="username"
+      class="form-control"
+      placeholder="Enter your Username"
+      formControlName="username"
+      style="width: 400px"
+    />
+
+    <!-- Error Message -->
+    @if (
+      loginForm.controls['username'].invalid &&
+      (loginForm.controls['username'].dirty || loginForm.controls['username'].touched)
+    ) {
+      @if (loginForm.controls['username'].hasError('required')) {
+        <p class="text-danger">username is required.</p>
+      }
+    }
+  </div>
+
+  <!-- Password Field -->
+  <div class="d-flex justify-content-center align-items-center gap-1">
+    <!-- Icon -->
+    <div
+      class="d-flex justify-content-center align-items-center p-2 rounded-2"
+      style="background-color: #f0f0f0"
+    >
+      <lucide-icon name="key-round" />
+    </div>
+
+    <!-- Input -->
+    <div class="position-relative">
+      <input
+        class="form-control"
+        style="width: 400px"
+        name="password"
+        [type]="showPassword ? 'text' : 'password'"
+        placeholder="Enter Your Password"
+        formControlName="password"
+      />
+      <!-- Eye Icons -->
+      <div
+        class="position-absolute top-50 end-0 translate-middle d-flex justify-content-center align-items-center"
+      >
+        @if (showPassword) {
+          <!-- Want To show Password -->
+          <div (click)="showPassword = !showPassword">
+            <lucide-icon name="eye" size="20" class="cursor-pointer" />
+          </div>
+        } @else {
+          <!-- Can't Show Password -->
+          <div (click)="showPassword = !showPassword">
+            <lucide-icon name="eye-off" size="20" class="cursor-pointer" />
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (
+      loginForm.controls['password'].invalid &&
+      (loginForm.controls['password'].dirty || loginForm.controls['password'].touched)
+    ) {
+      @if (loginForm.controls['password'].hasError('required')) {
+        <p class="text-danger">password is required.</p>
+      }
+      @if (loginForm.controls['password'].hasError('minlength')) {
+        <p class="text-danger">password must be at least 8 characters long.</p>
+      }
+    }
+  </div>
+
+  <p>
+    If you didn't have an account,
+    <a routerLink="/register" class="btn-link cursor-pointer">click here</a>
+  </p>
+  <button class="btn btn-success px-4" [disabled]="loginForm.invalid">Login</button>
+</form>

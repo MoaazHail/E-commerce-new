@@ -1,0 +1,64 @@
+@if (inputConfig.type === 'password') {
+  <!-- Password Field -->
+  <div class="position-relative d-flex justify-content-center align-items-center gap-1 w-100">
+    <!-- Icon -->
+    <div
+      class="d-flex justify-content-center align-items-center p-2 rounded-2"
+      style="background-color: #f0f0f0"
+    >
+      <lucide-icon name="key-round" />
+    </div>
+
+    <!-- Input -->
+    <input
+      class="form-control"
+      [type]="showPassword ? 'text' : 'password'"
+      [placeholder]="inputConfig.placeholder"
+    />
+
+    <!-- Eye Icons -->
+    <div
+      class="position-absolute top-50 end-0 translate-middle d-flex justify-content-center align-items-center"
+    >
+      @if (showPassword) {
+        <!-- Want To show Password -->
+        <div (click)="showPassword = !showPassword">
+          <lucide-icon name="eye" size="20" class="cursor-pointer" />
+        </div>
+      } @else {
+        <!-- Can't Show Password -->
+        <div (click)="showPassword = !showPassword">
+          <lucide-icon name="eye-off" size="20" class="cursor-pointer" />
+        </div>
+      }
+    </div>
+  </div>
+} @else if (inputConfig.type === 'text') {
+  <!-- Text Field -->
+  <div class="d-flex justify-content-center align-items-center gap-1 w-100">
+    <!-- Icon -->
+    <div
+      class="d-flex justify-content-center align-items-center p-2 rounded-2"
+      style="background-color: #f0f0f0"
+    >
+      <lucide-icon name="inbox" />
+    </div>
+
+    <!-- Text Input -->
+    <input type="text" class="form-control" [placeholder]="inputConfig.placeholder" />
+  </div>
+} @else if (inputConfig.type === 'email') {
+  <!-- Text Field -->
+  <div class="d-flex justify-content-center align-items-center gap-1 w-100">
+    <!-- Icon -->
+    <div
+      class="d-flex justify-content-center align-items-center p-2 rounded-2"
+      style="background-color: #f0f0f0"
+    >
+      <lucide-icon name="at-sign" />
+    </div>
+
+    <!-- Email Input -->
+    <input type="email" class="form-control" [placeholder]="inputConfig.placeholder" />
+  </div>
+}
