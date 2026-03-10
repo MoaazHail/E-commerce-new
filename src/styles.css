@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.input-label-required {
+  position: relative;
+  /* Adding some padding-left so the asterisk doesn't overlap the text */
+  padding-left: 10px;
+}
+
+.input-label-required::before {
+  content: '*';
+  color: red;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  font-weight: bold;
+}
