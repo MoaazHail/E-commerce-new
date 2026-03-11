@@ -265,8 +265,14 @@
   </div>
 
   <p>
-    If you didn't have an account,
-    <a routerLink="/register" class="btn-link cursor-pointer">click here</a>
+    If you have an account,
+    <a routerLink="/login" class="btn-link cursor-pointer">click here</a>
   </p>
+
+  @if (apiError !== '') {
+    <div class="alert alert-danger w-100 text-center">
+      <p>Error: {{ apiError }}</p>
+    </div>
+  }
   <button class="btn btn-success px-4" [disabled]="registerForm.invalid">Register</button>
 </form>

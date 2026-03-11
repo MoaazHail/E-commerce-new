@@ -23,6 +23,8 @@ export const passwordMatchValidator: ValidatorFn = (
 export class Register implements OnInit {
   showPassword: boolean = false;
 
+  apiError: string = '';
+
   // Forms
   registerForm: FormGroup;
 
@@ -63,8 +65,9 @@ export class Register implements OnInit {
         next: (data) => {
           console.log(data);
         },
-        error(err) {
+        error: (err) => {
           console.log(err);
+          this.apiError = err?.error?.message;
         },
       });
     }

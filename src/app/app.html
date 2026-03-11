@@ -4,7 +4,11 @@
       <a class="navbar-brand" routerLink="/">MyApp</a>
       <div class="navbar-nav">
         <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
-        <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+        @if (authService.isAuthenticated()) {
+          <a class="nav-link text-danger cursor-pointer" (click)="authService.logout()">Logout</a>
+        } @else {
+          <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+        }
         <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
         <a class="nav-link" routerLink="/cart" routerLinkActive="active">Cart</a>
       </div>
