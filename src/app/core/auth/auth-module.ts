@@ -7,7 +7,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from '../../app-routing-module';
 import { AtSign, Eye, EyeOff, Hash, Inbox, KeyRound, LucideAngularModule } from 'lucide-angular';
-import { userGuard } from './guard-guard';
 
 @NgModule({
   declarations: [Login, Register],
@@ -21,6 +20,6 @@ import { userGuard } from './guard-guard';
   ],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [Login],
-  exports: [],
+  exports: [LucideAngularModule],
 })
 export class AuthModule {}
