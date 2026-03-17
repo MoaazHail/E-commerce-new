@@ -8,7 +8,5 @@ import { AuthService } from './core/auth/auth.service';
   styleUrl: './app.css',
 })
 export class App {
-  protected readonly title = signal('dashboard');
-  token = signal<string | null>(null);
-  protected authService = inject(AuthService);
+  protected readonly title = signal('My-App');
 }
