@@ -1,19 +1,45 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Home } from './home/home';
-import { Cart } from './cart/cart';
-import { ProductDetails } from './product-details/product-details';
+import { Home } from './public/home/home';
 
+import { ProductDetails } from './public/product-details/product-details';
+import { FormField } from '@angular/forms/signals';
+import {
+  ChevronsLeft,
+  ChevronsRight,
+  Heart,
+  LucideAngularModule,
+  Minus,
+  Plus,
+  ShoppingCart,
+  Star,
+  Trash2,
+  Users,
+} from 'lucide-angular';
+import { Cart } from './public/cart/cart';
 
+import { AppRoutingModule } from '../app-routing-module';
+import { DashboardModule } from './dashboard/dashboard-module';
 
 @NgModule({
-  declarations: [
-    Home,
-    Cart,
-    ProductDetails
-  ],
+  declarations: [Home, Cart, ProductDetails],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+    FormField,
+    LucideAngularModule.pick({
+      ShoppingCart,
+      Heart,
+      Star,
+      Trash2,
+      Plus,
+      Minus,
+      Users,
+      ChevronsLeft,
+      ChevronsRight,
+    }),
+    AppRoutingModule,
+    DashboardModule,
+  ],
+  exports: [Home, Cart, ProductDetails, LucideAngularModule],
 })
-export class FeaturesModule { }
+export class FeaturesModule {}
