@@ -1,0 +1,28 @@
+<header class="color-gray card-shadow">
+  <nav class="navbar navbar-expand-lg navbar-light mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" routerLink="/">MyApp</a>
+      <div class="navbar-nav gap-4">
+        <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
+        <a class="nav-link" routerLink="/cart" routerLinkActive="active"
+          ><lucide-angular name="shopping-cart" />
+        </a>
+        @if (authService.isAuthenticated()) {
+          <div
+            class="d-flex justify-content-center align-items-center rounded-2 text-white bg-danger gap-2 px-2 cursor-pointer"
+            (click)="authService.logout()"
+          >
+            <span>Logout</span>
+            <lucide-angular name="log-out" />
+          </div>
+        } @else {
+          <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+          <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
+        }
+      </div>
+    </div>
+  </nav>
+</header>
+<main class="container">
+  <router-outlet></router-outlet>
+</main>
