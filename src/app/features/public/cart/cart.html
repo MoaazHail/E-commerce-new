@@ -1,0 +1,322 @@
+<section class="h-100 h-custom" style="background-color: #eeee">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col">
+        <div class="card">
+          <div class="card-body p-4">
+            <div class="row">
+              <!-- Left column -->
+              <div class="col-lg-7">
+                <!-- Navigate To Home Page  -->
+                <h5 class="mb-3">
+                  <a routerLink="/" class="text-body cursor-pointer">Continue shopping</a>
+                </h5>
+                <hr />
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <div>
+                    <p class="mb-1">Shopping cart</p>
+                    <p class="mb-0">
+                      You have {{ userCart()?.totalQuantity || guestCart()?.length }} items in your
+                      cart
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Products -->
+                @for (
+                  product of userCart()?.products || guestCart();
+                  track product.id || product.product.id
+                ) {
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between">
+                        <div class="d-flex flex-row align-items-center">
+                          <!-- Product Image  -->
+                          <div>
+                            <img
+                              [src]="product.thumbnail || product.product.images[0]"
+                              class="img-fluid rounded-3"
+                              [alt]="product.title || product.product.title"
+                              style="width: 65px"
+                            />
+                          </div>
+
+                          <!-- Title -->
+                          <div class="ms-3">
+                            <h5>{{ product.title || product.product.title }}</h5>
+                          </div>
+                        </div>
+
+                        <div class="d-flex flex-row align-items-center gap-3">
+                          <!-- Quantity -->
+                          <div class="d-flex flex-row align-items-center gap-3">
+                            <!-- Add -->
+                            <button
+                              class="btn btn-sm bg-primary fs-5"
+                              type="button"
+                              (click)="increaseQuantity(product.id, product.quantity)"
+                            >
+                              <lucide-angular name="plus" [size]="15" />
+                            </button>
+
+                            <div>
+                              <h5 class="fw-normal mb-0">{{ product.quantity }}</h5>
+                            </div>
+
+                            <!-- Remove -->
+                            <button
+                              class="btn btn-sm bg-warning fs-5"
+                              type="button"
+                              (click)="decreaseQuantity(product.id, product.quantity)"
+                            >
+                              <lucide-angular name="minus" [size]="15" />
+                            </button>
+                          </div>
+
+                          <!-- Pice -->
+                          <div>
+                            <h5 class="mb-0">$ {{ product.price || product.product.price }}</h5>
+                          </div>
+
+                          <!-- Trash -->
+                          <button href="#!" class="btn btn-sm bg-danger text-white">
+                            <lucide-icon name="trash-2" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <!-- Right column -->
+              <div class="col-lg-5">
+                <div class="card bg-primary text-white rounded-3">
+                  @if (authService.isAuthenticated()) {
+                    <div class="card-body">
+                      <!-- User Image -->
+                      <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Card details</h5>
+                        <img
+                          src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
+                          class="img-fluid rounded-3"
+                          style="width: 45px"
+                          alt="Avatar"
+                        />
+                      </div>
+
+                      <!-- Form -->
+                      <form class="mt-4">
+                        <!-- Felid -->
+                        <div data-mdb-input-init class="form-outline form-white mb-4">
+                          <input
+                            type="text"
+                            id="typeName"
+                            class="form-control form-control-lg"
+                            size="17"
+                            placeholder="Cardholder's Name"
+                          />
+                          <label class="form-label" for="typeName">Cardholder's Name</label>
+                        </div>
+
+                        <!-- Felid -->
+                        <div data-mdb-input-init class="form-outline form-white mb-4">
+                          <input
+                            type="text"
+                            id="typeText"
+                            class="form-control form-control-lg"
+                            siez="17"
+                            placeholder="1234 5678 9012 3457"
+                            minlength="19"
+                            maxlength="19"
+                          />
+                          <label class="form-label" for="typeText">Card Number</label>
+                        </div>
+
+                        <!-- Felid -->
+                        <div class="row mb-4">
+                          <div class="col-md-6">
+                            <div data-mdb-input-init class="form-outline form-white">
+                              <input
+                                type="text"
+                                id="typeExp"
+                                class="form-control form-control-lg"
+                                placeholder="MM/YYYY"
+                                size="7"
+                                id="exp"
+                                minlength="7"
+                                maxlength="7"
+                              />
+                              <label class="form-label" for="typeExp">Expiration</label>
+                            </div>
+                          </div>
+
+                          <!-- Felid -->
+                          <div class="col-md-6">
+                            <div data-mdb-input-init class="form-outline form-white">
+                              <input
+                                type="password"
+                                id="typeText"
+                                class="form-control form-control-lg"
+                                placeholder="***"
+                                size="1"
+                                minlength="3"
+                                maxlength="3"
+                              />
+                              <label class="form-label" for="typeText">Cvv</label>
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <!-- Shipping -->
+                        <div class="d-flex justify-content-between">
+                          <p class="mb-2">Shipping</p>
+                          <p class="mb-2">$20.00</p>
+                        </div>
+
+                        <!-- Total -->
+                        <div class="d-flex justify-content-between mb-4">
+                          <p class="mb-2">Total</p>
+                          <p class="mb-2">${{ total() }}</p>
+                        </div>
+
+                        <!-- Checkout Button -->
+                        <button
+                          type="button"
+                          data-mdb-button-init
+                          data-mdb-ripple-init
+                          class="btn btn-info btn-block btn-lg"
+                        >
+                          <div class="d-flex justify-content-between gap-2">
+                            <span>${{ total() }}</span>
+                            <span>Checkout</span>
+                          </div>
+                        </button>
+                      </form>
+                    </div>
+                  } @else {
+                    <div class="card-body position-relative">
+                      <div class="bg-blur">
+                        <div class="bg-white p-4 text-dark fs-4 rounded-3">
+                          <p>Your are not login ??!</p>
+                          <p>
+                            please <a routerLink="/login" class="text-uppercase">Login</a> to
+                            continue
+                          </p>
+                        </div>
+                      </div>
+                      <!-- User Image -->
+                      <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Card details</h5>
+                        <img
+                          src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
+                          class="img-fluid rounded-3"
+                          style="width: 45px"
+                          alt="Avatar"
+                        />
+                      </div>
+
+                      <!-- Form -->
+                      <form class="mt-4">
+                        <!-- Felid -->
+                        <div data-mdb-input-init class="form-outline form-white mb-4">
+                          <input
+                            type="text"
+                            id="typeName"
+                            class="form-control form-control-lg"
+                            size="17"
+                            placeholder="Cardholder's Name"
+                          />
+                          <label class="form-label" for="typeName">Cardholder's Name</label>
+                        </div>
+
+                        <!-- Felid -->
+                        <div data-mdb-input-init class="form-outline form-white mb-4">
+                          <input
+                            type="text"
+                            id="typeText"
+                            class="form-control form-control-lg"
+                            siez="17"
+                            placeholder="1234 5678 9012 3457"
+                            minlength="19"
+                            maxlength="19"
+                          />
+                          <label class="form-label" for="typeText">Card Number</label>
+                        </div>
+
+                        <!-- Felid -->
+                        <div class="row mb-4">
+                          <div class="col-md-6">
+                            <div data-mdb-input-init class="form-outline form-white">
+                              <input
+                                type="text"
+                                id="typeExp"
+                                class="form-control form-control-lg"
+                                placeholder="MM/YYYY"
+                                size="7"
+                                id="exp"
+                                minlength="7"
+                                maxlength="7"
+                              />
+                              <label class="form-label" for="typeExp">Expiration</label>
+                            </div>
+                          </div>
+
+                          <!-- Felid -->
+                          <div class="col-md-6">
+                            <div data-mdb-input-init class="form-outline form-white">
+                              <input
+                                type="password"
+                                id="typeText"
+                                class="form-control form-control-lg"
+                                placeholder="***"
+                                size="1"
+                                minlength="3"
+                                maxlength="3"
+                              />
+                              <label class="form-label" for="typeText">Cvv</label>
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <!-- Shipping -->
+                        <div class="d-flex justify-content-between">
+                          <p class="mb-2">Shipping</p>
+                          <p class="mb-2">$20.00</p>
+                        </div>
+
+                        <!-- Total -->
+                        <div class="d-flex justify-content-between mb-4">
+                          <p class="mb-2">Total</p>
+                          <p class="mb-2">${{ total() }}</p>
+                        </div>
+
+                        <!-- Checkout Button -->
+                        <button
+                          type="button"
+                          data-mdb-button-init
+                          data-mdb-ripple-init
+                          class="btn btn-info btn-block btn-lg"
+                        >
+                          <div class="d-flex justify-content-between gap-2">
+                            <span>${{ total() }}</span>
+                            <span>Checkout</span>
+                          </div>
+                        </button>
+                      </form>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
