@@ -6,7 +6,6 @@ import { Cart } from './features/public/cart/cart';
 import { Home } from './features/public/home/home';
 import { userGuard } from './core/auth/guard-guard';
 import { ProductDetails } from './features/public/product-details/product-details';
-
 import { Navbar } from './shared/layout/navbar/navbar';
 
 const routes: Routes = [
@@ -27,7 +26,7 @@ const routes: Routes = [
   {
     path: 'dashboard',
     loadChildren: () =>
-      import('./features/dashboard/dashboard-module').then((m) => m.DashboardModule),
+      import('./features/private/dashboard-routing-module').then((m) => m.DashboardRouteModule),
   },
 
   // Optional: Redirect any unknown paths back to home

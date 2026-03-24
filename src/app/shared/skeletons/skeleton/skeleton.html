@@ -1,0 +1,9 @@
+<div class="placeholder-glow" aria-hidden="true">
+  @if (type === 'square') {
+    <div class="placeholder rounded-pill" [style.width]="width"></div>
+  } @else if (type === 'circle') {
+    <div class="placeholder rounded-pill" [style.width]="width" [style.height]="width"></div>
+  }
+
+  <span class="visually-hidden">Loading...</span>
+</div>

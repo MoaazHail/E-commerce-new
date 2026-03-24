@@ -24,7 +24,6 @@ export interface Product {
 }
 
 interface Dimensions {
-  id: number;
   depth: number;
   height: number;
   width: number;

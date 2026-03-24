@@ -1,0 +1,98 @@
+@if (modalState() !== 'none') {
+  <div class="modal-backdrop fade show"></div>
+
+  <div class="modal d-block fade show" tabindex="-1">
+    <!-- Modal -->
+    <div class="modal-dialog modal-dialog-centered">
+      <!-- Modal Content -->
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <!-- Modal Header -->
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">
+            {{
+              modalState() === 'update'
+                ? 'Update Product'
+                : modalState() === 'delete'
+                  ? 'Delete Product'
+                  : 'Add New Product'
+            }}
+          </h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body py-4">
+          @if (modalState() === 'update') {
+            <form [formGroup]="updateForm">
+              <!-- Title Field -->
+              <div class="mb-3">
+                <label class="form-label text-secondary small">Product Title</label>
+                <input type="text" class="form-control" formControlName="title" />
+              </div>
+
+              <!-- Price Field -->
+              <div class="mb-3">
+                <label class="form-label text-secondary small">Price ($)</label>
+                <input type="number" class="form-control" formControlName="price" />
+              </div>
+
+              <!-- Stock Field -->
+              <div class="mb-3">
+                <label class="form-label text-secondary small">Stock</label>
+                <input type="number" class="form-control" formControlName="stock" />
+              </div>
+            </form>
+          } @else if (modalState() === 'delete') {
+            <div class="text-center">
+              <!-- <lucide-icon name="alert-triangle" class="text-danger mb-3" size="48"></lucide-icon> -->
+              <p class="mb-0">
+                Are you sure you want to delete <strong>{{ selectedProduct()?.title }}</strong
+                >?
+              </p>
+              <small class="text-muted">This action cannot be undone.</small>
+            </div>
+          } @else if (modalState() === 'add') {
+            <form [formGroup]="addForm">
+              <!-- Title Field -->
+              <div class="mb-3">
+                <label class="form-label text-secondary small">Product Title</label>
+                <input type="text" class="form-control" formControlName="title" />
+              </div>
+
+              <!-- Price Field -->
+              <div class="mb-3">
+                <label class="form-label text-secondary small">Price ($)</label>
+                <input type="number" class="form-control" formControlName="price" />
+              </div>
+
+              <!-- Stock Field -->
+              <div class="mb-3">
+                <label class="form-label text-secondary small">Stock</label>
+                <input type="number" class="form-control" formControlName="stock" />
+              </div>
+            </form>
+          }
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer border-0">
+          <button class="btn btn-light rounded-3" (click)="closeModal()">Cancel</button>
+
+          <button
+            class="btn rounded-3"
+            [class]="modalState() === 'delete' ? 'btn-danger' : 'btn-dark'"
+            (click)="confirmAction()"
+          >
+            {{
+              modalState() === 'delete'
+                ? 'Confirm Delete'
+                : modalState() === 'update'
+                  ? 'Save Changes'
+                  : 'Add'
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

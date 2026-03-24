@@ -1,8 +1,14 @@
 <section
   class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center bg-light gap-3"
 >
-  @if (!products()) {
-    <p>loading ...</p>
+  @if (isLoading()) {
+    <div>
+      <app-skeleton width="100" type="square" />
+      <app-skeleton width="300" type="square" />
+      <app-skeleton width="300" type="square" />
+      <app-skeleton width="300" type="square" />
+      <p>loading ...</p>
+    </div>
   } @else {
     @for (product of products(); track product.id) {
       <div class="card card-shadow d-flex">
@@ -49,6 +55,7 @@
     }
   }
 
+  <!-- Pagination -->
   <nav>
     <ul class="pagination gap-2 align-items-center">
       <li class="page-item cursor-pointer" [class.disabled]="currentPage() === 1">
@@ -57,18 +64,10 @@
         </a>
       </li>
 
-      @if (visiblePages()[0] > 1) {
-        <li class="page-item disabled"><span class="page-link border-0">...</span></li>
-      }
-
       @for (page of visiblePages(); track page) {
         <li class="page-item cursor-pointer" [class.active]="currentPage() === page">
           <a class="page-link" (click)="changePage(page)">{{ page }}</a>
         </li>
-      }
-
-      @if (visiblePages()[visiblePages().length - 1] < totalPages()) {
-        <li class="page-item disabled"><span class="page-link border-0">...</span></li>
       }
 
       <li class="page-item cursor-pointer" [class.disabled]="currentPage() === totalPages()">

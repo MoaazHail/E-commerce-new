@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ProductService } from '../../services/home';
 import { Product, ProductResponse } from '../../../lib/types/product';
@@ -28,46 +28,63 @@ export class Home implements OnInit {
   // ------- Signals --------
   response = signal<ProductResponse | null>(null);
   products = signal<Product[]>([]);
+  isLoading = signal<boolean>(false);
 
   // Guest Cart
   productsCart = signal<{ product: Product; quantity: number }[]>([]);
   quantity = signal<number>(1);
 
   // Pagination
-  skip = signal<number>(0);
+  private route = inject(ActivatedRoute);
+
+  // Pagination Signals
   limit = signal(9);
   currentPage = signal(1);
   totalItems = signal(194);
   totalPages = computed(() => Math.ceil(this.totalItems() / this.limit()));
+
   visiblePages = computed(() => {
     const current = this.currentPage();
     const max = this.totalPages();
 
+    // If we are at the beginning
     if (current <= 1) return [1, 2, 3].filter((p) => p <= max);
+
+    // If we are at the end
     if (current >= max) return [max - 2, max - 1, max].filter((p) => p > 0);
 
+    // If we are in the middle, show [previous, current, next]
     return [current - 1, current, current + 1];
   });
 
-  // NG OnInit
+  // Skip is now a computed value based on page and limit
+  skip = computed(() => (this.currentPage() - 1) * this.limit());
+
   ngOnInit(): void {
-    this.getData();
-    // Create A Cart In Local Storage
-    const cart = localStorage.getItem('my-cart');
-    if (cart) {
-      this.productsCart.set(JSON.parse(cart));
-    }
+    // Listen to Query Params changes
+    this.route.queryParams.subscribe((params) => {
+      const page = +params['page'] || 1;
+      const limit = +params['limit'] || 9;
+
+      this.currentPage.set(page);
+      this.limit.set(limit);
+
+      // Fetch data whenever params change
+      this.getData();
+    });
   }
 
-  // Display All Products
   getData() {
+    this.isLoading.set(true);
+    // Use the values from your signals
     this.homeService.getAllProducts(this.skip(), this.limit()).subscribe({
       next: (payload) => {
         this.products.set(payload.products);
+        this.isLoading.set(false);
       },
       error: (err) => {
-        // Future: Be A UI Component For The Error
-        console.log(err.error.message);
+        console.error(err);
+        this.isLoading.set(false);
       },
     });
   }
@@ -119,15 +136,21 @@ export class Home implements OnInit {
     this.toaster.success(`product added to cart!`, 'Success');
   }
 
-  // Pagination
   changePage(page: number) {
-    if (page >= 1 && page <= this.totalPages()) {
-      this.currentPage.set(page);
-      if (page === 1) {
-        this.skip.set(0);
-      }
-      this.skip.set((page - 1) * this.limit());
-      this.getData();
-    }
+    const max = Math.ceil(this.totalItems() / this.limit());
+    if (page < 1 || page > max || page === this.currentPage()) return;
+
+    // Navigate to the same route but with new params
+    // This will trigger the subscribe block in ngOnInit
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        limit: this.limit(),
+        page: page,
+        skip: (page - 1) * this.limit(),
+        select: 'title,price',
+      },
+      queryParamsHandling: 'merge', // keeps other params if you have them
+    });
   }
 }
