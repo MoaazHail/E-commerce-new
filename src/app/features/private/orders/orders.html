@@ -1,0 +1,67 @@
+<header class="bg-white shadow-sm p-3 mb-4">
+  <div class="d-flex justify-content-between aligh-item-center">
+    <h1>Orders</h1>
+    <button class="btn btn-md btn-dark" (click)="exportToExcel()">
+      <lucide-icon name="download" /> Explore
+    </button>
+  </div>
+  <p class="text-gray">Manage and track all your orders</p>
+</header>
+
+<div
+  class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4"
+>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Order ID</th>
+        <th scope="col">Customer</th>
+        <th scope="col">Product</th>
+        <th scope="col">Date</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Status</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (order of orders(); track order.id) {
+        <tr class="">
+          <th scope="row"># {{ order.id }}</th>
+          <td>{{ order.username }}</td>
+          <td>{{ order.products[0].title }}</td>
+          <td>../../....</td>
+          <td>$ {{ order.total }}</td>
+          <td>{{ order.isCompleted | orderPipe }}</td>
+          <td class="position-relative">
+            <div
+              class="p-2 bg-light rounded-circle cursor-pointer text-center"
+              style="width: 35px; height: 35px"
+              (click)="toggleMenu(order.id, $event)"
+            >
+              <lucide-icon name="ellipsis" size="18" />
+            </div>
+
+            @if (activeMenuId() === order.id) {
+              <div
+                class="action-menu shadow-lg border rounded-3 bg-white p-2 animate__animated animate__fadeIn"
+              >
+                <button
+                  class="btn btn-sm btn-light w-100 text-start d-flex align-items-center gap-2 mb-1"
+                >
+                  <lucide-icon name="pencil" size="14" class="text-primary" />
+                  Update
+                </button>
+                <button
+                  class="btn btn-sm btn-light w-100 text-start d-flex align-items-center gap-2 text-danger"
+                >
+                  <lucide-icon name="trash-2" size="14" />
+                  Delete
+                </button>
+              </div>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
