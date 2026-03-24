@@ -10,7 +10,11 @@ export class ProductService {
   // Http Client
   private _http = inject(HttpClient);
 
-  // Get All Product
+  getProducts(): Observable<any> {
+    return this._http.get(`${BASE_API}/products`);
+  }
+
+  // Get Product Using skip , limit
   getAllProducts(skip: number, limit: number): Observable<any> {
     return this._http.get(`${BASE_API}/products?limit=${limit}&skip=${skip}`);
   }

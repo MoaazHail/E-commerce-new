@@ -5,15 +5,17 @@ import { LucideAngularModule, EyeOff, Eye, Inbox, KeyRound, AtSign, LogOut } fro
 import { ReactiveFormsModule } from '@angular/forms';
 import { Navbar } from './layout/navbar/navbar';
 import { AppRoutingModule } from '../app-routing-module';
+import { Skeleton } from './skeletons/skeleton/skeleton';
+import { Modal } from './modal/modal';
 
 @NgModule({
-  declarations: [InputField, Navbar],
+  declarations: [InputField, Navbar, Skeleton, Modal],
   imports: [
     CommonModule,
     LucideAngularModule.pick({ EyeOff, Eye, Inbox, KeyRound, AtSign, LogOut }),
     ReactiveFormsModule,
     AppRoutingModule,
   ],
-  exports: [InputField],
+  exports: [InputField, Skeleton, Modal],
 })
 export class SharedModule {}
