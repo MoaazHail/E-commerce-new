@@ -1,0 +1,125 @@
+<header class="bg-white shadow-sm p-3">
+  <h1>Dashboard Overview</h1>
+  <p class="text-gray">Welcome back! Here's what's happening with your store today.</p>
+</header>
+
+<!-- First Row -->
+<div class="d-flex flex-wrap justify-content-center aligh-item-center p-2 py-4 gap-4">
+  @for (card of statueStore(); track card.title) {
+    <div
+      class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border"
+    >
+      <div class="d-flex justify-content-center aligh-item-center gap-4">
+        <h4>{{ card.title }}</h4>
+        <lucide-angular [name]="card.icon" [size]="18" />
+      </div>
+      <p class="text-center fs-3">{{ card.value }}</p>
+      <div class="d-flex justify-content-center aligh-item-center gap-2">
+        <span
+          [class.text-success]="card.trend === 'up'"
+          [class.text-danger]="card.trend === 'down'"
+        >
+          {{ card.change }}
+        </span>
+        <span class="text-gray">from last month</span>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Secund Row -->
+<div class="d-flex flex-wrap justify-content-center aligh-item-center p-2 py-4 gap-4">
+  <div
+    class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4"
+    style="width: 400px"
+  >
+    <h5 class="fw-bold mb-4">Revenue Overview</h5>
+
+    <div id="chart">
+      <apx-chart
+        [series]="revenueChartOptions.series!"
+        [chart]="revenueChartOptions.chart!"
+        [xaxis]="revenueChartOptions.xaxis!"
+        [stroke]="revenueChartOptions.stroke!"
+        [tooltip]="revenueChartOptions.tooltip!"
+        [dataLabels]="revenueChartOptions.dataLabels!"
+        [colors]="revenueChartOptions.colors!"
+      ></apx-chart>
+    </div>
+  </div>
+
+  <div
+    class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4"
+    style="width: 400px"
+  >
+    <h5 class="fw-bold mb-4">Orders Overview</h5>
+
+    <div id="chart">
+      <apx-chart
+        [series]="ordersChartOptions.series!"
+        [chart]="ordersChartOptions.chart!"
+        [xaxis]="ordersChartOptions.xaxis!"
+        [stroke]="ordersChartOptions.stroke!"
+        [tooltip]="ordersChartOptions.tooltip!"
+        [dataLabels]="ordersChartOptions.dataLabels!"
+        [colors]="ordersChartOptions.colors!"
+      ></apx-chart>
+    </div>
+  </div>
+</div>
+
+<!-- Third Row -->
+<div class="d-flex flex-wrap justify-content-center aligh-item-center p-2 py-4 gap-4">
+  <!-- Categories -->
+  <div
+    class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4"
+    style="width: 400px"
+  >
+    <h5 class="fw-bold mb-4">Sales by Category</h5>
+
+    <div id="chart">
+      <apx-chart
+        [series]="pieChartOptions.series!"
+        [chart]="pieChartOptions.chart!"
+        [colors]="pieChartOptions.colors!"
+        [dataLabels]="pieChartOptions.dataLabels!"
+      ></apx-chart>
+    </div>
+  </div>
+
+  <!-- Orders -->
+  <div
+    class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4"
+  >
+    <!-- Header -->
+    <div class="d-flex justify-content-between aligh-item-center">
+      <h5 class="fw-bold mb-4">Recent Orders</h5>
+      <button class="btn btn-dark" routerLink="/dashboard/orders">View All</button>
+    </div>
+
+    @for (order of orders(); track order.id) {
+      <div class="d-flex justify-content-between aligh-item-center border-bottom pb-3 w-100">
+        <!-- Lift Side -->
+        <div class="d-flex flex-column justify-content-center aligh-item-center">
+          <span>{{ order.username }}</span>
+          <span class="text-secondary">{{ order.id }}</span>
+        </div>
+
+        <!-- Right Side -->
+        <div class="d-flex justify-content-center aligh-item-center gap-4 fs-6">
+          <span>${{ order.total }}</span>
+          <div
+            class="d-flex justify-content-center aligh-item-center px-2 rounded-2"
+            style="height: 30px"
+            [class.bg-info]="order.isCompleted"
+            [class.text-dark]="order.isCompleted"
+            [class.bg-secondary]="!order.isCompleted"
+            [class.text-white]="!order.isCompleted"
+          >
+            <span>{{ order.isCompleted | orderPipe }}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

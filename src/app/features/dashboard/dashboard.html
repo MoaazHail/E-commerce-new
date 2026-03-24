@@ -1,0 +1,27 @@
+<div class="d-flex" style="height: 100vh">
+  <aside class="bg-secondary text-white p-3 d-flex flex-column" style="width: 250px">
+    <div>
+      <h3 class="mb-4">Admin Panel</h3>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a routerLink="products" routerLinkActive="text-primary" class="nav-link text-white">
+            <lucide-icon name="shopping-cart" size="18" class="me-2"></lucide-icon> Products
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="bg-primary p-2">
+      <lucide-icon name="users" size="18" class="me-2"></lucide-icon> Users
+    </div>
+  </aside>
+
+  <div class="flex-grow-1 d-flex flex-column">
+    <header class="bg-white shadow-sm p-3">
+      <h4>Dashboard Overview</h4>
+    </header>
+
+    <main class="p-4 bg-light flex-grow-1 overflow-auto">
+      <router-outlet name="dashboard"></router-outlet>
+    </main>
+  </div>
+</div>
