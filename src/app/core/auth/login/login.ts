@@ -40,6 +40,8 @@ export class Login implements OnInit {
     if (values.password !== '') {
       this.loginService.login(values).subscribe({
         next: (data) => {
+          console.log(data);
+
           localStorage.setItem('token', data.accessToken);
           this.router.navigate(['/']);
         },
