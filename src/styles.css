@@ -104,3 +104,134 @@ aside {
   border-color: #000;
   box-shadow: none;
 }
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #198754;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  position: relative;
+}
+
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 40px;
+  background-color: #198754;
+  border-radius: 4px;
+}
+
+/* --------------------- Home Card ------------------------------- */
+
+/* Ensure the parent card doesn't shrink on hover */
+.product-card {
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.product-card:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Soft shadow on hover */
+}
+
+/* 1. The Container must be Relative and overflow-hidden */
+.product-img-container {
+  min-height: 250px;
+  background-color: #f5f5f5 !important; /* Light grey base */
+}
+
+/* --- TRANSITION 1: White Action Buttons --- */
+
+/* Initially push them further right (off-screen but inside container) */
+.action-buttons-group {
+  transition:
+    transform 0.4s ease-in-out,
+    opacity 0.3s ease-in-out;
+  opacity: 0;
+  transform: translateX(15px); /* Start slightly off-canvas to the right */
+}
+
+/* On Card Hover: Pull them back in from right to left */
+.product-card:hover .action-buttons-group {
+  transform: translateX(0); /* Return to original position */
+  opacity: 1;
+}
+
+/* Styling for the specific white button from your design */
+.btn-white {
+  background-color: white !important;
+  color: black;
+  width: 35px;
+  height: 35px;
+}
+
+.btn-white:hover {
+  background-color: #198754 !important; /* The red highlight color */
+  color: white;
+}
+
+/* --- TRANSITION 2: Add to Cart Button --- */
+
+/* Only handle the desktop button animation */
+@media (min-width: 768px) {
+  .add-to-cart-btn-desktop {
+    transition:
+      transform 0.4s ease-in-out,
+      opacity 0.3s ease-in-out;
+    border-radius: 0; /* Keep it full width and square */
+
+    /* Initially hide it below the container's edge */
+    transform: translateY(100%);
+    opacity: 0;
+
+    /* Font style from your design */
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* On Card Hover: Slide the button up from the bottom */
+  .product-card:hover .add-to-cart-btn-desktop {
+    transform: translateY(0); /* Final Position */
+    opacity: 1;
+  }
+}
+
+.category-card {
+  background-color: #ffffff;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  border-color: #e5e5e5 !important;
+}
+
+.category-card:hover {
+  background-color: #198754;
+  border-color: #198754 !important;
+  color: #ffffff;
+}
+
+.carousel-nav-btn {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5 !important;
+  border: none;
+}
+
+.carousel-nav-btn:hover {
+  background-color: #e0e0e0 !important;
+}
+
+.placeholder {
+  background-color: #f5f5f5; /* Match your bg-light gray */
+  border: none;
+  cursor: wait;
+}
+
+/* Ensure circle is a perfect 1:1 ratio */
+.rounded-circle {
+  border-radius: 50% !important;
+}

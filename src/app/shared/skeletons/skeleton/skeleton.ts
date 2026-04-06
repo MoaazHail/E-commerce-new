@@ -6,7 +6,4 @@ import { Component, Input, input } from '@angular/core';
   templateUrl: './skeleton.html',
   styleUrl: './skeleton.css',
 })
-export class Skeleton {
-  @Input() width!: string;
-  @Input() type!: 'circle' | 'square';
-}
+export class Skeleton {}

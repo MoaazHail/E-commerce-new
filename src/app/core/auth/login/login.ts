@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../auth.service';
-import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { ActivatedRoute } from '@angular/router';
+import { finalize } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -9,47 +11,46 @@ import { Router } from '@angular/router';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login implements OnInit {
-  showPassword: boolean = false;
+export class Login {
+  // Injectable
+  private _authService = inject(AuthService);
+  private _route = inject(ActivatedRoute);
+
+  private _toaster = inject(ToastrService);
+
+  // Signals
+  public apiError = signal<string>('');
+  public showPassword = signal<boolean>(false);
+  public isLoading = signal<boolean>(false);
 
   // Forms
-  loginForm: FormGroup;
+  public loginForm: FormGroup = new FormGroup({
+    username: new FormControl('', [Validators.required]),
+    password: new FormControl('', [Validators.required, Validators.minLength(8)]),
+  });
 
-  //
-  apiError: string = '';
-
-  ngOnInit(): void {
-    this.onSubmit();
-  }
-
-  constructor(
-    private loginService: AuthService,
-    private router: Router,
-  ) {
-    this.loginForm = new FormGroup({
-      username: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required, Validators.minLength(8)]),
-    });
-  }
-
+  // Submit Login Form
   onSubmit() {
-    let values: LoginForm = {
-      username: this.loginForm.value.username,
-      password: this.loginForm.value.password,
-    };
-    if (values.password !== '') {
-      this.loginService.login(values).subscribe({
-        next: (data) => {
-          console.log(data);
+    if (this.loginForm.invalid) return;
 
-          localStorage.setItem('token', data.accessToken);
-          this.router.navigate(['/']);
+    this.isLoading.set(true);
+
+    this._authService
+      .login(this.loginForm.value)
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (data) => {
+          this._toaster.success(`Login successfully!`, 'Success');
+          this._authService.handleLoginSuccess(
+            data.accessToken,
+            data,
+            this._route.snapshot.queryParamMap.get('callback'),
+          );
         },
         error: (err) => {
-          console.log(err);
-          this.apiError = err?.error?.message;
+          this._toaster.error(`An error occurred!`, 'Error');
+          this.apiError.set(err?.error?.message || 'An error occurred');
         },
       });
-    }
   }
 }

@@ -1,7 +1,7 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { ModalType } from '../../lib/types/modal';
 import { Product } from '../../lib/types/product';
-import { ProductService } from '../../features/services/home';
+import { ProductService } from '../../core/services/poduct.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 

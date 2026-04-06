@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ProductService } from '../../services/home';
-import { AuthService } from '../../../core/auth/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProductService } from '../../../core/services/poduct.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../lib/types/product';
 import { ToastrService } from 'ngx-toastr';
 
@@ -12,39 +12,51 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './product-details.css',
 })
 export class ProductDetails implements OnInit {
-  // Injectable
-  // Inject Route
-  route = inject(ActivatedRoute);
+  // --- Injectable ---
+
+  // Inject ActivatedRoute
+  private _router = inject(Router);
+  // Inject ActivatedRoute
+  private _route = inject(ActivatedRoute);
 
   // Inject Toastr
-  toaster = inject(ToastrService);
+  private _toaster = inject(ToastrService);
   // Inject Product Service
-  productService = inject(ProductService);
+  private _productService = inject(ProductService);
 
   // Inject Auth Service
-  authService = inject(AuthService);
+  private _authService = inject(AuthService);
 
-  // Signals
+  // --- Signals ---
   product = signal<Product | null>(null);
   productId = signal<number>(NaN);
   productsCart = signal<{ product: any; quantity: number }[]>([]);
   quantity = signal<number>(1);
+  callback = signal<any>('');
 
   // NG OnInit
   ngOnInit(): void {
     const cart = localStorage.getItem('my-cart');
 
+    this.callback.set(this._route.snapshot.queryParamMap.get('callback'));
+    console.log(this.callback());
+
     if (cart) {
       this.productsCart.set(JSON.parse(cart));
     }
-    this.productId.set(Number(this.route.snapshot.paramMap.get('id')));
+    this.productId.set(Number(this._route.snapshot.paramMap.get('id')));
 
     this.getProduct();
   }
-
+  navigate() {
+    const targetUrl = this.callback();
+    if (targetUrl) {
+      this._router.navigateByUrl(`/?${targetUrl}`);
+    }
+  }
   // Render The Product Details
   getProduct() {
-    this.productService.getProductById(this.productId()).subscribe({
+    this._productService.getProductById(this.productId()).subscribe({
       next: (payload) => {
         this.product.set(payload);
       },
@@ -57,15 +69,15 @@ export class ProductDetails implements OnInit {
 
   // Add This Product To The Cart
   addToCart() {
-    if (this.authService.isAuthenticated()) {
+    if (this._authService.isAuthenticated()) {
       this.addToUserCart();
       // Toaster
-      this.toaster.success(`product added to cart!`, 'Success');
+      this._toaster.success(`product added to cart!`, 'Success');
     } else {
       if (this.quantity() <= 1) {
         this.addToGuestCart();
         // Toaster
-        this.toaster.success(`product added to cart!`, 'Success');
+        this._toaster.success(`product added to cart!`, 'Success');
       }
     }
   }
@@ -91,7 +103,7 @@ export class ProductDetails implements OnInit {
 
   // Add The Product To The Cart <User Has Token>
   addToUserCart() {
-    this.productService.addToCart(this.productId()).subscribe({
+    this._productService.addToCart(this.productId()).subscribe({
       next: (payload: any) => {
         console.log(payload);
       },

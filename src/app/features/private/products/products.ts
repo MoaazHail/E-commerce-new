@@ -1,5 +1,5 @@
 import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
-import { ProductService } from '../../services/home';
+import { ProductService } from '../../../core/services/poduct.service';
 import { Product } from '../../../lib/types/product';
 import { ToastrService } from 'ngx-toastr';
 
