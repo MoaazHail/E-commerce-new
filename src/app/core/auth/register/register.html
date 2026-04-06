@@ -1,278 +1,210 @@
 <form
   [formGroup]="registerForm"
-  class="d-flex flex-column justify-content-center align-items-start gap-3 mt-4 mx-2"
+  class="d-flex flex-column gap-3 mx-auto p-4 rounded-3"
   (ngSubmit)="onSubmit()"
-  style="width: 600px"
+  style="max-width: 800px; background-color: #f0f0f0"
 >
-  <!-- Name Details Group -->
-  <div
-    formGroupName="nameDetails"
-    class="d-flex flex-wrap justify-content-start align-items-center gap-2 w-100"
-  >
-    <!-- First Name Field -->
-    <div class="d-flex flex-column justify-content-center align-items-start gap-1">
-      <label class="input-label-required">First Name </label>
-      <!-- First Name Input -->
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Enter your First Name"
-        formControlName="firstName"
-        style="width: 200px"
-      />
+  <!-- Form Title -->
+  <h1 class="fw-bold mb-2">Create Account</h1>
 
-      <!-- Error Message -->
+  <div formGroupName="nameDetails" class="row g-2">
+    <!-- First Name Field -->
+    <div class="col-12 col-sm-4">
+      <label class="input-label-required fw-bold">First Name</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light"
+          ><lucide-icon name="a-large-small" size="18"></lucide-icon
+        ></span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="First Name"
+          formControlName="firstName"
+        />
+      </div>
       @if (
         registerForm.get('nameDetails.firstName')?.invalid &&
-        (registerForm.get('nameDetails.firstName')?.dirty ||
-          registerForm.get('nameDetails.firstName')?.touched)
+        registerForm.get('nameDetails.firstName')?.touched
       ) {
-        @if (registerForm.get('nameDetails.firstName')?.hasError('required')) {
-          <small class="text-danger">First Name is required.</small>
-        }
+        <small class="text-danger d-block">Required</small>
       }
     </div>
 
     <!-- Maiden Name Field -->
-    <div class="d-flex flex-column justify-content-center align-items-start gap-1">
-      <label class="input-label-required">Maiden Name</label>
-      <!-- Maiden Name Input -->
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Enter your Maiden Name"
-        formControlName="maidenName"
-        style="width: 250px"
-      />
-
-      <!-- Error Message -->
-      @if (
-        registerForm.get('nameDetails.maidenName')?.invalid &&
-        (registerForm.get('nameDetails.maidenName')?.dirty ||
-          registerForm.get('nameDetails.maidenName')?.touched)
-      ) {
-        @if (registerForm.get('nameDetails.maidenName')?.hasError('required')) {
-          <small class="text-danger">Maiden Name is required.</small>
-        }
-      }
+    <div class="col-12 col-sm-4">
+      <label class="fw-bold">Maiden Name</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light"
+          ><lucide-icon name="a-large-small" size="18"></lucide-icon
+        ></span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Maiden Name"
+          formControlName="maidenName"
+        />
+      </div>
     </div>
 
     <!-- Last Name Field -->
-    <div class="d-flex flex-column justify-content-center align-items-start gap-1">
-      <label class="input-label-required"> Last Name</label>
+    <div class="col-12 col-sm-4">
+      <label class="fw-bold">Last Name</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light"
+          ><lucide-icon name="a-large-small" size="18"></lucide-icon
+        ></span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Last Name"
+          formControlName="lastName"
+        />
+      </div>
+    </div>
+  </div>
 
-      <!-- Last Name Input -->
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Enter your Last Name"
-        formControlName="lastName"
-        style="width: 200px"
-      />
+  <div class="row g-2">
+    <!-- Age Field -->
+    <div class="col-12 col-sm-6">
+      <label class="input-label-required fw-bold">Age</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light"
+          ><lucide-icon name="hash" size="18"></lucide-icon
+        ></span>
+        <input type="number" class="form-control" placeholder="Age" formControlName="age" />
+      </div>
 
-      <!-- Error Message -->
+      <!-- Message Error -->
       @if (
-        registerForm.get('nameDetails.lastName')?.invalid &&
-        (registerForm.get('nameDetails.lastName')?.dirty ||
-          registerForm.get('nameDetails.lastName')?.touched)
+        registerForm.get('age')?.invalid &&
+        (registerForm.get('age')?.dirty || registerForm.get('age')?.touched)
       ) {
-        @if (registerForm.get('nameDetails.lastName')?.hasError('required')) {
-          <small class="text-danger">Last Name is required.</small>
-        }
+        <small class="text-danger ms-5">Age is required.</small>
+      }
+    </div>
+
+    <!-- Gender Field -->
+    <div class="col-12 col-sm-6">
+      <label class="input-label-required fw-bold">Gender</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light"
+          ><lucide-icon name="venus-and-mars" size="18"></lucide-icon
+        ></span>
+        <select formControlName="gender" class="form-select">
+          <option value="" disabled selected>Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+
+      <!-- Message Error -->
+      @if (
+        registerForm.get('gender')?.invalid &&
+        (registerForm.get('gender')?.dirty || registerForm.get('gender')?.touched)
+      ) {
+        <small class="text-danger ms-5">Gender is required.</small>
       }
     </div>
   </div>
 
-  <!-- Age Field -->
-  <div class="d-flex justify-content-start align-items-center gap-1 w-100">
-    <!-- Icon -->
-    <div
-      class="d-flex flex-column justify-content-center align-items-center p-2 rounded-2"
-      style="background-color: #f0f0f0"
-    >
-      <label class="input-label-required"> Age</label>
+  <!-- Email Field -->
+  <div class="w-100">
+    <label class="input-label-required fw-bold">Email</label>
+    <div class="input-group">
+      <span class="input-group-text bg-light"
+        ><lucide-icon name="at-sign" size="18"></lucide-icon
+      ></span>
+      <input type="text" class="form-control" placeholder="Email" formControlName="email" />
     </div>
 
-    <!-- Age Input -->
-    <input
-      type="number"
-      class="form-control"
-      placeholder="Enter your Age"
-      formControlName="age"
-      style="width: 400px"
-    />
-
-    <!-- Error Message -->
+    <!-- Message Error -->
     @if (
-      registerForm.controls['age'].invalid &&
-      (registerForm.controls['age'].dirty || registerForm.controls['age'].touched)
+      registerForm.get('email')?.invalid &&
+      (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)
     ) {
-      @if (registerForm.controls['age'].hasError('required')) {
-        <small class="text-danger">Age is required.</small>
-      }
+      <small class="text-danger ms-5">Email is required.</small>
     }
   </div>
 
-  <!-- Gender -->
-  <div class="d-flex justify-content-start align-items-center gap-1 w-100">
-    <!-- Icon -->
-    <div
-      class="d-flex flex-column justify-content-center align-items-center p-2 rounded-2"
-      style="background-color: #f0f0f0"
-    >
-      <label class="input-label-required"> Gender</label>
-    </div>
-    <select formControlName="gender" class="form-control" style="width: 400px">
-      <option value="" disabled></option>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-    </select>
-
-    <!-- Error Message -->
-    @if (registerForm.controls['gender'].dirty || registerForm.controls['gender'].touched) {
-      @if (registerForm.controls['gender'].hasError('required')) {
-        <small class="text-danger">Gender is required.</small>
-      }
-    }
-  </div>
-
-  <!-- username Field -->
-  <div class="d-flex justify-content-start align-items-center gap-1 w-100">
-    <!-- Icon -->
-    <div
-      class="d-flex justify-content-center align-items-center p-2 rounded-2"
-      style="background-color: #f0f0f0"
-    >
-      <lucide-icon name="at-sign" />
+  <!-- UserName Field -->
+  <div class="w-100">
+    <label class="input-label-required fw-bold">Username</label>
+    <div class="input-group">
+      <span class="input-group-text bg-light"
+        ><lucide-icon name="at-sign" size="18"></lucide-icon
+      ></span>
+      <input type="text" class="form-control" placeholder="Username" formControlName="username" />
     </div>
 
-    <!-- UserName Input -->
-    <input
-      type="username"
-      class="form-control"
-      placeholder="Enter your Username"
-      formControlName="username"
-      style="width: 400px"
-    />
-
-    <!-- Error Message -->
+    <!-- Message Error -->
     @if (
-      registerForm.controls['username'].invalid &&
-      (registerForm.controls['username'].dirty || registerForm.controls['username'].touched)
+      registerForm.get('username')?.invalid &&
+      (registerForm.get('username')?.dirty || registerForm.get('username')?.touched)
     ) {
-      @if (registerForm.controls['username'].hasError('required')) {
-        <small class="text-danger">username is required.</small>
-      }
+      <small class="text-danger ms-5">Username is required.</small>
     }
   </div>
 
-  <!-- Password Field -->
-  <div class="d-flex justify-content-center align-items-center gap-1">
-    <!-- Icon -->
-    <div
-      class="d-flex justify-content-center align-items-center p-2 rounded-2"
-      style="background-color: #f0f0f0"
-    >
-      <lucide-icon name="key-round" />
-    </div>
+  <div class="row g-2">
+    <!-- Password Field -->
+    <div class="col-12 col-sm-6">
+      <label class="input-label-required fw-bold">Password</label>
 
-    <!-- Input -->
-    <div class="position-relative">
-      <input
-        class="form-control"
-        style="width: 400px"
-        name="password"
-        [type]="showPassword ? 'text' : 'password'"
-        placeholder="Enter Your Password"
-        formControlName="password"
-      />
-      <!-- Eye Icons -->
-      <div
-        class="position-absolute top-50 end-0 translate-middle d-flex justify-content-center align-items-center"
-      >
-        @if (showPassword) {
-          <!-- Want To show Password -->
-          <div (click)="showPassword = !showPassword">
-            <lucide-icon name="eye" size="20" class="cursor-pointer" />
-          </div>
-        } @else {
-          <!-- Can't Show Password -->
-          <div (click)="showPassword = !showPassword">
-            <lucide-icon name="eye-off" size="20" class="cursor-pointer" />
-          </div>
-        }
+      <div class="position-relative">
+        <input
+          [type]="showPassword() ? 'text' : 'password'"
+          class="form-control pe-5"
+          placeholder="Password"
+          formControlName="password"
+        />
+        <span
+          class="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
+          (click)="showPassword.set(!showPassword())"
+        >
+          <lucide-icon [name]="showPassword() ? 'eye' : 'eye-off'" size="18"></lucide-icon>
+        </span>
       </div>
     </div>
 
-    <!-- Error Message -->
-    @if (
-      registerForm.controls['password'].invalid &&
-      (registerForm.controls['password'].dirty || registerForm.controls['password'].touched)
-    ) {
-      @if (registerForm.controls['password'].hasError('required')) {
-        <small class="text-danger">password is required.</small>
-      }
-      @if (registerForm.controls['password'].hasError('minlength')) {
-        <small class="text-danger">password must be at least 8 characters long.</small>
-      }
-    }
-  </div>
+    <!-- Confirm Password Field -->
+    <div class="col-12 col-sm-6">
+      <label class="input-label-required fw-bold">Confirm Password</label>
 
-  <!-- Confirm Password Field -->
-  <div class="d-flex justify-content-center align-items-center gap-1">
-    <!-- Icon -->
-    <div
-      class="d-flex justify-content-center align-items-center p-2 rounded-2"
-      style="background-color: #f0f0f0"
-    >
-      <lucide-icon name="key-round" />
-    </div>
-
-    <!-- Input -->
-    <div class="position-relative">
-      <input
-        class="form-control"
-        style="width: 400px"
-        name="password"
-        [type]="showPassword ? 'text' : 'password'"
-        placeholder="Enter The Same Password"
-        formControlName="confirmPassword"
-      />
-      <!-- Eye Icons -->
-      <div
-        class="position-absolute top-50 end-0 translate-middle d-flex justify-content-center align-items-center"
-      >
-        @if (showPassword) {
-          <!-- Want To show Password -->
-          <div (click)="showPassword = !showPassword">
-            <lucide-icon name="eye" size="20" class="cursor-pointer" />
-          </div>
-        } @else {
-          <!-- Can't Show Password -->
-          <div (click)="showPassword = !showPassword">
-            <lucide-icon name="eye-off" size="20" class="cursor-pointer" />
-          </div>
-        }
+      <div class="position-relative">
+        <input
+          [type]="showPassword() ? 'text' : 'password'"
+          class="form-control pe-5"
+          placeholder="Confirm"
+          formControlName="confirmPassword"
+        />
       </div>
     </div>
-
-    <!-- Error Message -->
-    @if (
-      registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched
-    ) {
-      <small class="text-danger">Passwords do not match!</small>
-    }
   </div>
+  <!-- Error Message -->
+  @if (registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched) {
+    <small class="text-danger">Passwords do not match!</small>
+  }
 
-  <p>
-    If you have an account,
-    <a routerLink="/login" class="btn-link cursor-pointer">click here</a>
+  <!-- Login Paragraph -->
+  <p class="my-4 text-center">
+    Already have an account?
+    <a routerLink="/auth/login" class="text-success fw-bold text-decoration-none">Login</a>
   </p>
 
-  @if (apiError !== '') {
-    <div class="alert alert-danger w-100 text-center">
-      <p>Error: {{ apiError }}</p>
-    </div>
+  <!-- Server Error -->
+  @if (apiError()) {
+    <div class="alert alert-danger py-2 text-center">{{ apiError() }}</div>
   }
-  <button class="btn btn-success px-4" [disabled]="registerForm.invalid">Register</button>
+
+  <!-- Submit Button -->
+  <button
+    class="btn btn-success w-100 py-2 fw-bold"
+    [disabled]="registerForm.invalid || isLoading()"
+  >
+    @if (isLoading()) {
+      <span class="spinner-border spinner-border-sm me-2"></span> Registering...
+    } @else {
+      Register
+    }
+  </button>
 </form>

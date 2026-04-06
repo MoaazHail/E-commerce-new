@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { AuthService } from './core/auth/auth.service';
+import { AuthService } from './core/services/auth.service';
+import { StoreModule } from '@ngrx/store';
 
 @Component({
   selector: 'app-root',

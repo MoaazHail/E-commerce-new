@@ -10,6 +10,11 @@ interface RegisterForm {
   lastName: string;
   gender?: 'male' | 'female';
   username: string;
+  email: string;
   password: string;
   age: number;
+}
+
+interface ForgotPasswordForm {
+  email: string;
 }

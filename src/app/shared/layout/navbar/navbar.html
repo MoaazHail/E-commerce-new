@@ -1,28 +1,153 @@
-<header class="color-gray card-shadow">
-  <nav class="navbar navbar-expand-lg navbar-light mb-4">
-    <div class="container-fluid">
-      <a class="navbar-brand" routerLink="/">MyApp</a>
-      <div class="navbar-nav gap-4">
-        <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
-        <a class="nav-link" routerLink="/cart" routerLinkActive="active"
-          ><lucide-angular name="shopping-cart" />
+<div class="bg-black text-white text-center py-2 small fw-light">
+  Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!
+  <a href="#" class="text-white fw-bold ms-2">ShopNow</a>
+</div>
+
+<header class="sticky-top bg-white border-bottom shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-light py-3">
+    <div class="container">
+      <a class="navbar-brand fw-bold fs-3 text-black" routerLink="/">
+        Exclusive<span class="text-success">.</span>
+      </a>
+
+      <div class="d-flex align-items-center d-lg-none ms-auto gap-3 me-3">
+        <a class="nav-link p-0 position-relative" routerLink="/cart">
+          <lucide-angular name="shopping-cart" size="22"></lucide-angular>
+          @if (cartCount() > 0) {
+            <span
+              class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger p-1"
+            >
+              {{ cartCount() }}
+            </span>
+          }
         </a>
-        @if (authService.isAuthenticated()) {
+      </div>
+
+      <button
+        class="navbar-toggler border-0 shadow-none"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4 text-center">
+          <li class="nav-item">
+            <a
+              class="nav-link border-hover"
+              routerLink="/"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Home</a
+            >
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link border-hover" routerLink="/contact" routerLinkActive="active"
+              >Contact</a
+            >
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link border-hover" routerLink="/about" routerLinkActive="active">About</a>
+          </li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-3 justify-content-center">
           <div
-            class="d-flex justify-content-center align-items-center rounded-2 text-white bg-danger gap-2 px-2 cursor-pointer"
-            (click)="authService.logout()"
+            class="input-group d-none d-xl-flex bg-light rounded-2 overflow-hidden"
+            style="width: 240px"
           >
-            <span>Logout</span>
-            <lucide-angular name="log-out" />
+            <input
+              type="text"
+              class="form-control border-0 bg-light py-2 small"
+              placeholder="What are you looking for?"
+            />
+            <span class="input-group-text border-0 bg-light">
+              <lucide-angular name="search" size="18" class="text-muted"></lucide-angular>
+            </span>
           </div>
-        } @else {
-          <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
-          <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
-        }
+
+          <div class="d-flex align-items-center gap-3 ms-lg-2">
+            <a class="nav-link p-0 hover-red" routerLink="/wishlist">
+              <lucide-angular name="heart" size="24"></lucide-angular>
+            </a>
+
+            <a
+              class="nav-link p-0 position-relative hover-red d-none d-lg-block"
+              routerLink="/cart"
+            >
+              <lucide-angular name="shopping-cart" size="24"></lucide-angular>
+              @if (cartCount() > 0) {
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger px-1"
+                  style="font-size: 10px"
+                >
+                  {{ cartCount() }}
+                </span>
+              }
+            </a>
+
+            @if (isAuth()) {
+              <div class="dropdown">
+                <button
+                  class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center"
+                  data-bs-toggle="dropdown"
+                  style="width: 32px; height: 32px"
+                  aria-expanded="false"
+                >
+                  <lucide-angular name="user" size="20" color="white"></lucide-angular>
+                </button>
+
+                <ul
+                  class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 p-3"
+                  style="min-width: 220px; border-radius: 4px"
+                >
+                  <li>
+                    <a
+                      class="dropdown-item d-flex align-items-center gap-3 py-2"
+                      routerLink="/profile"
+                    >
+                      <lucide-angular name="user" size="18"></lucide-angular> Manage My Account
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item d-flex align-items-center gap-3 py-2"
+                      routerLink="/orders"
+                    >
+                      <lucide-angular name="shopping-bag" size="18"></lucide-angular> My Order
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider my-2" /></li>
+                  <li>
+                    <a
+                      class="dropdown-item d-flex align-items-center gap-3 py-2 text-danger"
+                      (click)="authService.logout()"
+                    >
+                      <lucide-angular name="log-out" size="18"></lucide-angular> Logout
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            } @else {
+              <a
+                class="btn btn-success px-4 py-2 rounded-1 fw-medium border-0 f"
+                (click)="callbackService.navigate('auth/login')"
+                >Login</a
+              >
+
+              <a
+                class="btn btn-outline-success px-4 py-2 rounded-1 fw-medium"
+                (click)="callbackService.navigate('auth/register')"
+                >Register</a
+              >
+            }
+          </div>
+        </div>
       </div>
     </div>
   </nav>
 </header>
-<main class="container">
-  <router-outlet></router-outlet>
-</main>

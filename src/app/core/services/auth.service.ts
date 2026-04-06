@@ -15,13 +15,12 @@ export class AuthService {
 
   // Signals
   private readonly _api: string = `${BASE_API}/users`;
-  private _token = signal<string | null>(localStorage.getItem('token'));
-  isAuthenticated = computed(() => !!this._token());
+  token = signal<string | null>(localStorage.getItem('token'));
+  isAuthenticated = computed(() => (this.token() ? true : false));
 
   currentUser = signal<User | null>(null);
 
   constructor() {
-    // 2. On app load, check if a user is already saved in the browser
     const savedUser = localStorage.getItem('user_data');
     if (savedUser) {
       this.currentUser.set(JSON.parse(savedUser));
@@ -42,9 +41,33 @@ export class AuthService {
     });
   }
 
+  handleLoginSuccess(token: string, userData: User, callback?: string | null) {
+    // 1. Update Storage
+    localStorage.setItem('token', token);
+    localStorage.setItem('user_data', JSON.stringify(userData));
+    console.log(callback);
+
+    // 2. Update Signals
+    this.token.set(token);
+    this.currentUser.set(userData);
+
+    // 3. Navigate home
+    if (callback) {
+      this._router.navigate([callback]);
+    } else {
+      this._router.navigate(['/']);
+    }
+  }
+
   // Logout
   logout() {
-    this._token.set('');
-    this._router.navigate(['/login']);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user_data');
+
+    this.token.set(null);
+    this.currentUser.set(null);
+
+    // 3. Redirect the user
+    this._router.navigate(['auth/login']);
   }
 }

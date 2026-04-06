@@ -4,7 +4,7 @@ import { Dashboard } from './dashboard/dashboard';
 import { Products } from './products/products';
 import { DashboardLayout } from './dashboard-layout/dashboard-layout';
 import { Orders } from './orders/orders';
-import { adminGuard } from '../../core/auth/guard-guard';
+import { adminGuard } from '../../core/guards/auth.guard';
 
 const routes: Routes = [
   // Use empty string for the default landing page

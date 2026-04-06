@@ -1,7 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { GustCart, UserCart } from '../../../lib/types/cart';
-import { AuthService } from '../../../core/auth/auth.service';
-import { CartService } from '../../services/cart';
+import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -12,6 +13,7 @@ import { CartService } from '../../services/cart';
 export class Cart implements OnInit {
   // Inject Auth Service
   authService = inject(AuthService);
+  private _router = inject(Router);
 
   // Inject Cart Service
   cartService = inject(CartService);
@@ -80,6 +82,15 @@ export class Cart implements OnInit {
       },
       error: (err) => {
         console.log(err.error.message);
+      },
+    });
+  }
+
+  navigate() {
+    const callback = this._router.url;
+    this._router.navigate(['auth/login'], {
+      queryParams: {
+        callback: `/${callback}`,
       },
     });
   }

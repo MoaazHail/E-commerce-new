@@ -19,6 +19,11 @@ export class ProductService {
     return this._http.get(`${BASE_API}/products?limit=${limit}&skip=${skip}`);
   }
 
+  // Get Product Using skip , limit
+  getTodays(): Observable<any> {
+    return this._http.get(`${BASE_API}/products?limit=12&skip=12`);
+  }
+
   // Get Product By ID
   getProductById(id: number): Observable<any> {
     return this._http.get(`${BASE_API}/products/${id}`);
@@ -34,5 +39,9 @@ export class ProductService {
       { userId: 1, products: [{ id, quantity }] }, // UserId Must Be Take On NgRX Store !!?
       { headers: { ...HEADER_API } },
     );
+  }
+
+  searchProduct(search: string): Observable<any> {
+    return this._http.get(`${BASE_API}/products/search?q=${search}`);
   }
 }

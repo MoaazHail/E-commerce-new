@@ -1,12 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BASE_API, HEADER_API } from '../../lib/constants/api.constants';
+import { Product } from '../../lib/types/product';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
+  productsCart = signal<{ product: Product; quantity: number }[]>(
+    JSON.parse(localStorage.getItem('my-cart') || '[]'),
+  );
+
+  cartCount = computed(() => this.productsCart().reduce((acc, item) => acc + item.quantity, 0));
   private readonly _api = `${BASE_API}/carts`;
   private _http = inject(HttpClient);
 

@@ -6,17 +6,37 @@ import { SharedModule } from '../../shared/shared-module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from '../../app-routing-module';
-import { AtSign, Eye, EyeOff, Hash, Inbox, KeyRound, LucideAngularModule } from 'lucide-angular';
+import {
+  ALargeSmall,
+  AtSign,
+  Eye,
+  EyeOff,
+  Hash,
+  Inbox,
+  KeyRound,
+  LucideAngularModule,
+  VenusAndMars,
+} from 'lucide-angular';
+import { ForgotPassword } from './forgot-password/forgot-password';
 
 @NgModule({
-  declarations: [Login, Register],
+  declarations: [Login, Register, ForgotPassword],
   imports: [
     BrowserModule,
     CommonModule,
     SharedModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    LucideAngularModule.pick({ EyeOff, Eye, Inbox, KeyRound, AtSign, Hash }),
+    LucideAngularModule.pick({
+      EyeOff,
+      Eye,
+      Inbox,
+      KeyRound,
+      AtSign,
+      Hash,
+      ALargeSmall,
+      VenusAndMars,
+    }),
   ],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [Login],

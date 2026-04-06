@@ -1,101 +1,107 @@
+<!-- Form -->
 <form
   [formGroup]="loginForm"
-  class="d-flex flex-column justify-content-center align-items-start gap-3 mt-4 mx-2"
-  style="width: 500px"
+  class="d-flex flex-column gap-4 mx-auto p-4 rounded-3"
+  style="max-width: 500px; background-color: #f0f0f0"
   (ngSubmit)="onSubmit()"
 >
-  <!-- username Field -->
-  <div class="d-flex justify-content-start align-items-center gap-1 w-100">
-    <!-- Icon -->
-    <div
-      class="d-flex justify-content-center align-items-center p-2 rounded-2"
-      style="background-color: #f0f0f0"
-    >
-      <lucide-icon name="at-sign" />
-    </div>
+  <!-- Form Title -->
+  <h1 class="fw-bold mb-3">Login</h1>
 
-    <!-- UserName Input -->
-    <input
-      type="username"
-      class="form-control"
-      placeholder="Enter your Username"
-      formControlName="username"
-      style="width: 400px"
-    />
+  <!-- Username Field -->
+  <div class="w-100">
+    <!-- Label -->
+    <label for="username" class="input-label-required mb-2 form-label fw-bold">Username:</label>
+    <div class="input-group">
+      <div class="p-2 rounded-2 bg-light d-flex align-items-center justify-content-center">
+        <lucide-icon name="at-sign" size="20"></lucide-icon>
+      </div>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Enter your Username"
+        formControlName="username"
+      />
+    </div>
 
     <!-- Error Message -->
     @if (
-      loginForm.controls['username'].invalid &&
-      (loginForm.controls['username'].dirty || loginForm.controls['username'].touched)
+      loginForm.get('username')?.invalid &&
+      (loginForm.get('username')?.dirty || loginForm.get('username')?.touched)
     ) {
-      @if (loginForm.controls['username'].hasError('required')) {
-        <p class="text-danger">username is required.</p>
-      }
+      <small class="text-danger ms-5">Username is required.</small>
     }
   </div>
 
   <!-- Password Field -->
-  <div class="d-flex justify-content-center align-items-center gap-1">
-    <!-- Icon -->
-    <div
-      class="d-flex justify-content-center align-items-center p-2 rounded-2"
-      style="background-color: #f0f0f0"
-    >
-      <lucide-icon name="key-round" />
-    </div>
-
-    <!-- Input -->
-    <div class="position-relative">
-      <input
-        class="form-control"
-        style="width: 400px"
-        name="password"
-        [type]="showPassword ? 'text' : 'password'"
-        placeholder="Enter Your Password"
-        formControlName="password"
-      />
-      <!-- Eye Icons -->
-      <div
-        class="position-absolute top-50 end-0 translate-middle d-flex justify-content-center align-items-center"
-      >
-        @if (showPassword) {
-          <!-- Want To show Password -->
-          <div (click)="showPassword = !showPassword">
-            <lucide-icon name="eye" size="20" class="cursor-pointer" />
-          </div>
-        } @else {
-          <!-- Can't Show Password -->
-          <div (click)="showPassword = !showPassword">
-            <lucide-icon name="eye-off" size="20" class="cursor-pointer" />
-          </div>
-        }
+  <div class="w-100">
+    <!-- Label -->
+    <label for="password" class="input-label-required mb-2 form-label fw-bold">Password:</label>
+    <div class="input-group">
+      <div class="p-2 rounded-2 bg-light d-flex align-items-center justify-content-center">
+        <lucide-icon name="key-round" size="20"></lucide-icon>
+      </div>
+      <div class="position-relative flex-grow-1">
+        <input
+          class="form-control pe-5"
+          [type]="showPassword() ? 'text' : 'password'"
+          placeholder="Enter Your Password"
+          formControlName="password"
+        />
+        <div
+          class="position-absolute top-50 end-0 translate-middle-y me-2 cursor-pointer"
+          (click)="showPassword.set(!showPassword())"
+        >
+          <lucide-icon [name]="showPassword() ? 'eye' : 'eye-off'" size="18"></lucide-icon>
+        </div>
       </div>
     </div>
 
     <!-- Error Message -->
     @if (
-      loginForm.controls['password'].invalid &&
-      (loginForm.controls['password'].dirty || loginForm.controls['password'].touched)
+      loginForm.get('password')?.invalid &&
+      (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)
     ) {
-      @if (loginForm.controls['password'].hasError('required')) {
-        <p class="text-danger">password is required.</p>
-      }
-      @if (loginForm.controls['password'].hasError('minlength')) {
-        <p class="text-danger">password must be at least 8 characters long.</p>
-      }
+      <div class="ms-5">
+        @if (loginForm.get('password')?.hasError('required')) {
+          <small class="text-danger d-block">Password is required.</small>
+        }
+        @if (loginForm.get('password')?.hasError('minlength')) {
+          <small class="text-danger d-block">At least 8 characters required.</small>
+        }
+      </div>
     }
   </div>
 
-  <p>
-    If you didn't have an account,
-    <a routerLink="/register" class="btn-link cursor-pointer">click here</a>
+  <!-- Forgot password -->
+  <a
+    routerLink="/auth/forgot-password"
+    class="text-success btn-link fw-bold text-decoration-none text-end"
+    >Forgot your password?</a
+  >
+
+  <!-- Register Paragraph -->
+  <p class="text-center">
+    Don't have an account?
+    <a routerLink="/auth/register" class="text-success fw-bold text-decoration-none">Register</a>
   </p>
 
-  @if (apiError !== '') {
-    <div class="alert alert-danger w-100 text-center">
-      <p>Error: {{ apiError }}</p>
+  @if (apiError()) {
+    <div class="alert alert-danger py-2 text-center">
+      {{ apiError() }}
     </div>
   }
 
-  <button class="btn btn-success w-100" [disabled]="loginForm.invalid">Login</button>
+  <!-- Submit Button -->
+  <button
+    class="btn btn-success w-100 d-flex justify-content-center align-items-center gap-2"
+    [disabled]="loginForm.invalid || isLoading()"
+  >
+    @if (isLoading()) {
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span>Logging in...</span>
+    } @else {
+      <span>Login</span>
+    }
+  </button>
 </form>

@@ -1,4 +1,4 @@
-const BASE_API = 'https://dummyjson.com';
+const BASE_API = 'https://dummyjson.com'; //https://dummyjson.com
 const HEADER_API = { 'Content-Type': 'application/json' };
 
 // All Exports

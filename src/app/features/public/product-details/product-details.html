@@ -5,7 +5,7 @@
     <nav
       class="d-flex justify-content-center align-items-center gap-4 bg-dark text-secondary mb-3 rounded-pill py-2"
     >
-      <a routerLink="/" class="cursor-pointer nav-link">Home ></a>
+      <a (click)="navigate()" class="cursor-pointer nav-link">Home </a>
       <span class="text-light cursor-pointer">products/{{ productId() }} ></span>
     </nav>
     <div

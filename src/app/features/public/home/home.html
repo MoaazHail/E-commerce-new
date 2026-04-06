@@ -1,78 +1,210 @@
-<section
-  class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center bg-light gap-3"
->
-  @if (isLoading()) {
-    <div>
-      <app-skeleton width="100" type="square" />
-      <app-skeleton width="300" type="square" />
-      <app-skeleton width="300" type="square" />
-      <app-skeleton width="300" type="square" />
-      <p>loading ...</p>
-    </div>
-  } @else {
-    @for (product of products(); track product.id) {
-      <div class="card card-shadow d-flex">
-        <!-- Image -->
-        <img [src]="product.images[0]" class="card-img-top" [alt]="product.title" />
+<section>
+  <h1 class="section-title">Today's</h1>
+  <h2 class="fw-bold m-0 my-4">Flash Sales</h2>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center gap-3">
+    @if (isLoading()) {
+      <div>
+        <app-skeleton />
+        <app-skeleton />
+        <app-skeleton />
 
-        <div class="card-body">
-          <!-- Title -->
-          <h2 class="card-title">{{ product.title }}</h2>
+        <p>loading ...</p>
+      </div>
+    } @else {
+      @for (product of todays(); track product.id) {
+        <div class="product-card border-0 h-100 p-0" style="width: 18rem; height: 30rem !important">
+          <div class="product-img-container position-relative bg-light rounded overflow-hidden p-3">
+            <span class="badge bg-success position-absolute top-0 start-0 m-3 px-3 py-2"
+              >Todays Offer</span
+            >
 
-          <!-- Description -->
-          <div class="py-2">
-            <h3 style="color: gray">Description</h3>
-            <p class="card-text">
-              {{ product.description }}
-            </p>
+            <div
+              class="action-buttons-group position-absolute top-0 end-0 m-3 d-flex flex-column gap-2"
+            >
+              <button
+                class="btn btn-white shadow-sm border-0 p-2 d-flex align-items-center justify-content-center"
+              >
+                <lucide-icon name="heart" size="20"></lucide-icon>
+              </button>
+              <button
+                class="btn btn-white rounded-circle shadow-sm border-0 p-2 d-flex align-items-center justify-content-center"
+                (click)="productDetails(product.id)"
+              >
+                <lucide-icon name="eye" size="20"></lucide-icon>
+              </button>
+            </div>
+
+            <div class="d-block mt-4 mb-5">
+              <img
+                [src]="product.thumbnail"
+                width="220"
+                height="180"
+                class="img-fluid d-block mx-auto"
+              />
+            </div>
+
+            <button
+              class="btn btn-dark add-to-cart-btn-desktop w-100 position-absolute bottom-0 start-0 py-2 d-flex align-items-center justify-content-center gap-2"
+              (click)="addToCart(product.id, 'todays')"
+            >
+              <lucide-icon name="shopping-cart" size="18"></lucide-icon>
+              Add to Cart
+            </button>
           </div>
 
-          <!-- Price -->
-          <div class="d-flex justify-content-center align-items-center gap-3">
-            <h3>Price:</h3>
-            <h3>$ {{ product.price }}</h3>
+          <div class="card-body p-3 mt-1">
+            <h5 class="card-title fw-semibold mb-1">{{ product.title }}</h5>
+
+            <div class="d-flex align-items-center gap-3 mb-2">
+              <span class="text-success fw-bold fs-5">${{ product.price }}</span>
+              <span class="text-muted text-decoration-line-through fs-6"
+                >${{ product.discountPercentage + product.price }}</span
+              >
+            </div>
+
+            <div class="d-flex align-items-center gap-1">
+              <div class="text-warning">
+                <lucide-icon name="star" [color]="'#FFAD33'" size="20"> </lucide-icon>
+                {{ product.rating }}
+              </div>
+            </div>
           </div>
         </div>
+      }
+    }
+  </div>
+</section>
 
-        <!-- Action Buttons -->
-        <div class="d-flex justify-content-center align-items-center gap-4 py-4 text-white">
-          <div
-            class="d-flex justify-content-center align-items-center rounded-pill bg-primary cursor-pointer p-2"
-            (click)="productDetails(product.id)"
+<!-- Categories Section -->
+<section class="container my-5">
+  <!-- Section Title -->
+  <h1 class="section-title" id="#category">Category</h1>
+
+  <h2 class="fw-bold m-0 my-4">Browse By Category</h2>
+
+  <div class="row g-3">
+    @for (category of categories(); track category.url) {
+      <!-- Category Card -->
+      <div class="col-6 col-md-4 col-lg-2" (click)="categoryBySlogan(category.slug)">
+        <div class="category-card shadow-sm border rounded p-4 text-center">
+          <p class="m-0 fw-medium">{{ category.name }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="container my-5">
+  <!-- Section Title -->
+  <h1 class="section-title" id="#products">Our Products</h1>
+
+  <h2 class="fw-bold m-0 my-4">Explore Our Products</h2>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center gap-3">
+    @for (product of products(); track product.id) {
+      <div
+        class="card product-card border-0 h-100 p-0"
+        style="width: 18rem; height: 30rem !important"
+      >
+        <div class="product-img-container position-relative bg-light rounded overflow-hidden p-3">
+          <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-3 py-2"
+            >-{{ product.discountPercentage }}%</span
           >
-            <lucide-icon name="eye" class="bg-primary" />
+
+          <!-- Action Button -->
+          <div
+            class="action-buttons-group position-absolute top-0 end-0 m-3 d-flex flex-column gap-2"
+          >
+            <!-- WishList -->
+            <button
+              class="btn btn-white rounded-circle shadow-sm border-0 p-2 d-flex align-items-center justify-content-center"
+            >
+              <lucide-icon name="heart" size="20"></lucide-icon>
+            </button>
+
+            <!-- Product Details -->
+            <button
+              class="btn btn-white rounded-circle shadow-sm border-0 p-2 d-flex align-items-center justify-content-center"
+              (click)="productDetails(product.id)"
+            >
+              <lucide-icon name="eye" size="20"></lucide-icon>
+            </button>
           </div>
-          <div
-            class="d-flex justify-content-center align-items-center rounded-pill bg-success cursor-pointer p-2"
-            (click)="
-              authService.isAuthenticated() ? addToUserCart(product.id) : addToGustCart(product.id)
-            "
+
+          <!-- Product Image -->
+          <div class="d-block mt-4 mb-5">
+            <img
+              [src]="product.thumbnail"
+              width="220"
+              height="180"
+              class="img-fluid d-block mx-auto"
+            />
+          </div>
+
+          <!-- Add To Cart -->
+          <button
+            class="btn btn-dark add-to-cart-btn-desktop w-100 position-absolute bottom-0 start-0 py-2 d-flex align-items-center justify-content-center gap-2"
+            (click)="addToCart(product.id, 'product')"
           >
-            <lucide-icon name="shopping-cart" size="20" />
+            <lucide-icon name="shopping-cart" size="18"></lucide-icon>
+            Add to Cart
+          </button>
+        </div>
+
+        <!-- Product Info -->
+        <div class="card-body py-3 mt-1">
+          <!-- Product Title -->
+          <h5 class="card-title fw-semibold mb-1">{{ product.title }}</h5>
+
+          <!-- Product Price -->
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <span class="text-success fw-bold fs-5">${{ product.price }}</span>
+            <span class="text-muted text-decoration-line-through fs-6"
+              >${{ product.discountPercentage + product.price }}</span
+            >
+          </div>
+
+          <!-- Product Rating -->
+          <div class="d-flex align-items-center gap-1">
+            <div class="text-warning"></div>
+            <span class="text-muted small fw-bold">(88)</span>
           </div>
         </div>
       </div>
     }
-  }
-
+  </div>
   <!-- Pagination -->
-  <nav>
-    <ul class="pagination gap-2 align-items-center">
+  <nav class="mt-5">
+    <ul class="pagination gap-2 align-items-center justify-content-center">
       <li class="page-item cursor-pointer" [class.disabled]="currentPage() === 1">
-        <a class="page-link" (click)="changePage(currentPage() - 1)">
-          <lucide-icon name="chevrons-left" size="16" />
+        <a
+          class="page-link d-flex align-items-center justify-content-center"
+          (click)="changePage(currentPage() - 1)"
+          style="width: 40px; height: 40px"
+        >
+          <lucide-icon name="chevrons-left" size="16"></lucide-icon>
         </a>
       </li>
 
       @for (page of visiblePages(); track page) {
         <li class="page-item cursor-pointer" [class.active]="currentPage() === page">
-          <a class="page-link" (click)="changePage(page)">{{ page }}</a>
+          <a
+            class="page-link d-flex align-items-center justify-content-center"
+            (click)="changePage(page)"
+            style="width: 40px; height: 40px"
+          >
+            {{ page }}
+          </a>
         </li>
       }
 
       <li class="page-item cursor-pointer" [class.disabled]="currentPage() === totalPages()">
-        <a class="page-link" (click)="changePage(currentPage() + 1)">
-          <lucide-icon name="chevrons-right" size="16" />
+        <a
+          class="page-link d-flex align-items-center justify-content-center"
+          (click)="changePage(currentPage() + 1)"
+          style="width: 40px; height: 40px"
+        >
+          <lucide-icon name="chevrons-right" size="16"></lucide-icon>
         </a>
       </li>
     </ul>

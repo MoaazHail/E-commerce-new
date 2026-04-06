@@ -1,0 +1,48 @@
+<main class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="row row-cols-1 row-cols-md-2 align-items-center w-100 g-4 my-auto">
+    <section class="col order-2 order-md-1">
+      <router-outlet></router-outlet>
+    </section>
+    <!-- Image -->
+    <div class="position-relative col order-1 order-md-2 text-center">
+      <div class="d-flex justify-content-start w-100 mb-3">
+        <a
+          class="btn btn-link text-success fw-bold text-decoration d-flex align-items-center gap-2 p-0"
+          routerLink="/"
+        >
+          Back To Home</a
+        >
+      </div>
+      @if (isLogin()) {
+        <img
+          ngSrc="assets/login.png"
+          alt="login illustration"
+          width="900"
+          height="900"
+          priority
+          class="img-fluid d-none d-md-inline-block"
+        />
+      }
+      @if (isRegister()) {
+        <img
+          ngSrc="assets/register.png"
+          alt="register illustration"
+          width="900"
+          height="900"
+          priority
+          class="img-fluid d-none d-md-inline-block"
+        />
+      }
+      @if (isForgotPassword()) {
+        <img
+          ngSrc="assets/forgot-password.png"
+          alt="forgot password illustration"
+          width="900"
+          height="900"
+          priority
+          class="img-fluid d-none d-md-inline-block"
+        />
+      }
+    </div>
+  </div>
+</main>

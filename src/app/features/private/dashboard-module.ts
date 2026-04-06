@@ -5,7 +5,7 @@ import { DashboardLayout } from './dashboard-layout/dashboard-layout';
 import { Orders } from './orders/orders';
 import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from '../../app-routing-module';
-import { AuthModule } from '../../core/auth/auth-module';
+import { AuthModule } from '../../core/auth/auth.module';
 import {
   ChartPie,
   DollarSign,
