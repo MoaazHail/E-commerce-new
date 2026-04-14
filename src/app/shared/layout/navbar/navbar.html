@@ -9,31 +9,175 @@
       <a class="navbar-brand fw-bold fs-3 text-black" routerLink="/">
         Exclusive<span class="text-success">.</span>
       </a>
+      <!-- Search -->
+      <div class="position-relative d-none d-lg-inline justify-content-center align-item-center">
+        <div
+          class="input-group bg-light rounded-2 d-none d-lg-flex justify-content-center align-item-center"
+        >
+          <input
+            type="text"
+            [formControl]="searchControl"
+            class="form-control border-0 bg-light py-2 mx-2 small"
+            placeholder="What are you looking for?"
+          />
 
-      <div class="d-flex align-items-center d-lg-none ms-auto gap-3 me-3">
-        <a class="nav-link p-0 position-relative" routerLink="/cart">
-          <lucide-angular name="shopping-cart" size="22"></lucide-angular>
-          @if (cartCount() > 0) {
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger p-1"
+          <!-- Search Icon -->
+          <span class="input-group-text border-0 bg-light cursor-pointer rounded-3">
+            <lucide-angular name="search" size="18"></lucide-angular>
+          </span>
+
+          <!-- Search Results -->
+          @if (searchResults().length > 0) {
+            <div
+              class="position-absolute top-100 start-0 w-100 mt-1 shadow-sm rounded-2 border bg-white overflow-auto"
+              style="max-height: 300px; z-index: 1050"
             >
-              {{ cartCount() }}
-            </span>
+              @for (product of searchResults(); track product._id) {
+                <div
+                  class="p-2 border-bottom search-item cursor-pointer"
+                  style="z-index: 333 !important; background-color: #eee"
+                  (click)="productDetails(product._id)"
+                >
+                  <div class="d-flex align-items-center gap-2 w-100">
+                    <img
+                      [src]="product.image"
+                      style="width: 30px; height: 30px; object-fit: cover"
+                      class="rounded"
+                    />
+                    <span class="small text-dark">{{ product.name }}</span>
+                  </div>
+                </div>
+              }
+            </div>
           }
-        </a>
+        </div>
+      </div>
+      <!-- Icons -->
+      <div class="d-flex align-items-center justify-content-center gap-3">
+        <div class="d-flex align-items-center ms-lg-2">
+          <!-- Shopping Cart -->
+          <div class="d-flex align-items-center ms-auto gap-3">
+            <a class="nav-link p-0 position-relative" routerLink="/cart">
+              <lucide-angular name="shopping-cart" size="22"></lucide-angular>
+              @if (cartCount() > 0) {
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger p-1"
+                >
+                  {{ cartCount() }}
+                </span>
+              }
+            </a>
+          </div>
+
+          <!-- Wishlist -->
+          @if (isAuth()) {
+            <a class="nav-link p-0 hover-red" routerLink="/wishlist">
+              <lucide-angular name="heart" size="24" class="mx-3"></lucide-angular>
+            </a>
+          }
+
+          @if (isAuth()) {
+            <div class="dropdown">
+              <button
+                class="btn btn-success rounded-circle p-0 d-flex align-items-center justify-content-center"
+                data-bs-toggle="dropdown"
+                style="width: 32px; height: 32px"
+                aria-expanded="false"
+              >
+                <lucide-angular name="user" size="20" color="white"></lucide-angular>
+              </button>
+
+              <ul
+                class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 p-3"
+                style="min-width: 220px; border-radius: 4px"
+              >
+                <!-- Manage User -->
+                <!-- <li>
+                  <a
+                    class="dropdown-item d-flex align-items-center gap-3 py-2"
+                    routerLink="/profile"
+                  >
+                    <lucide-angular name="user" size="18"></lucide-angular> Manage My Account
+                  </a>
+                </li> -->
+                <li>
+                  <a
+                    class="dropdown-item d-flex align-items-center gap-3 py-2"
+                    routerLink="/orders"
+                  >
+                    <lucide-angular name="shopping-bag" size="18"></lucide-angular> My Order
+                  </a>
+                </li>
+                @if (authService.isAdmin()) {
+                  <li>
+                    <a
+                      class="dropdown-item d-flex align-items-center gap-3 py-2"
+                      routerLink="/dashboard"
+                    >
+                      <lucide-angular name="LayoutDashboard" size="18"></lucide-angular> Dashboard
+                    </a>
+                  </li>
+                }
+                <li><hr class="dropdown-divider my-2" /></li>
+                <li>
+                  <a
+                    class="dropdown-item d-flex align-items-center gap-3 py-2 text-danger cursor-pointer"
+                    (click)="authService.logout()"
+                  >
+                    <lucide-angular name="log-out" size="18"></lucide-angular> Logout
+                  </a>
+                </li>
+              </ul>
+            </div>
+          } @else {
+            <div class="dropdown">
+              <button
+                class="btn btn-success rounded-circle p-0 d-flex d-xl-none align-items-center justify-content-center"
+                data-bs-toggle="dropdown"
+                style="width: 32px; height: 32px"
+                aria-expanded="false"
+              >
+                <lucide-angular name="user" size="20" color="white"></lucide-angular>
+              </button>
+
+              <ul
+                class="dropdown-menu dropdown-menu-end shadow border-0 mt-3"
+                style="min-width: 150px; border-radius: 4px; z-index: 1500 !important"
+              >
+                <li class="dropdown-item d-flex align-items-center gap-3 py-2">
+                  <a
+                    class="px-4 py-2 fw-medium nav-item text-dark text-decoration-none"
+                    (click)="callbackService.navigate('auth/login')"
+                    >Login</a
+                  >
+                </li>
+                <li class="dropdown-item d-flex align-items-center gap-3 py-2">
+                  <a
+                    class="px-4 py-2 fw-medium nav-item text-dark text-decoration-none"
+                    (click)="callbackService.navigate('auth/register')"
+                    >Register</a
+                  >
+                </li>
+              </ul>
+            </div>
+          }
+          <button
+            class="navbar-toggler border-0 shadow-none"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
       </div>
 
-      <button
-        class="navbar-toggler border-0 shadow-none"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
+      <!-- Dropdown -->
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4 text-center">
+        <ul
+          class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4 text-center d-flex justify-content-center align-item-center"
+        >
+          <!-- Home -->
           <li class="nav-item">
             <a
               class="nav-link border-hover"
@@ -44,110 +188,75 @@
             >
           </li>
 
+          <!-- Contact -->
           <li class="nav-item">
             <a class="nav-link border-hover" routerLink="/contact" routerLinkActive="active"
               >Contact</a
             >
           </li>
 
+          <!-- About -->
           <li class="nav-item">
             <a class="nav-link border-hover" routerLink="/about" routerLinkActive="active">About</a>
           </li>
         </ul>
-
-        <div class="d-flex align-items-center gap-3 justify-content-center">
-          <div
-            class="input-group d-none d-xl-flex bg-light rounded-2 overflow-hidden"
-            style="width: 240px"
-          >
-            <input
-              type="text"
-              class="form-control border-0 bg-light py-2 small"
-              placeholder="What are you looking for?"
-            />
-            <span class="input-group-text border-0 bg-light">
-              <lucide-angular name="search" size="18" class="text-muted"></lucide-angular>
-            </span>
-          </div>
-
-          <div class="d-flex align-items-center gap-3 ms-lg-2">
-            <a class="nav-link p-0 hover-red" routerLink="/wishlist">
-              <lucide-angular name="heart" size="24"></lucide-angular>
-            </a>
-
-            <a
-              class="nav-link p-0 position-relative hover-red d-none d-lg-block"
-              routerLink="/cart"
-            >
-              <lucide-angular name="shopping-cart" size="24"></lucide-angular>
-              @if (cartCount() > 0) {
-                <span
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger px-1"
-                  style="font-size: 10px"
-                >
-                  {{ cartCount() }}
-                </span>
-              }
-            </a>
-
-            @if (isAuth()) {
-              <div class="dropdown">
-                <button
-                  class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center"
-                  data-bs-toggle="dropdown"
-                  style="width: 32px; height: 32px"
-                  aria-expanded="false"
-                >
-                  <lucide-angular name="user" size="20" color="white"></lucide-angular>
-                </button>
-
-                <ul
-                  class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 p-3"
-                  style="min-width: 220px; border-radius: 4px"
-                >
-                  <li>
-                    <a
-                      class="dropdown-item d-flex align-items-center gap-3 py-2"
-                      routerLink="/profile"
-                    >
-                      <lucide-angular name="user" size="18"></lucide-angular> Manage My Account
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="dropdown-item d-flex align-items-center gap-3 py-2"
-                      routerLink="/orders"
-                    >
-                      <lucide-angular name="shopping-bag" size="18"></lucide-angular> My Order
-                    </a>
-                  </li>
-                  <li><hr class="dropdown-divider my-2" /></li>
-                  <li>
-                    <a
-                      class="dropdown-item d-flex align-items-center gap-3 py-2 text-danger"
-                      (click)="authService.logout()"
-                    >
-                      <lucide-angular name="log-out" size="18"></lucide-angular> Logout
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            } @else {
-              <a
-                class="btn btn-success px-4 py-2 rounded-1 fw-medium border-0 f"
-                (click)="callbackService.navigate('auth/login')"
-                >Login</a
-              >
-
-              <a
-                class="btn btn-outline-success px-4 py-2 rounded-1 fw-medium"
-                (click)="callbackService.navigate('auth/register')"
-                >Register</a
-              >
-            }
-          </div>
-        </div>
       </div>
+
+      @if (!isAuth()) {
+        <div class="d-none d-xl-flex justify-content-center align-item-center gap-3">
+          <a
+            class="py-2 fw-medium nav-item text-dark text-decoration-none"
+            (click)="callbackService.navigate('auth/login')"
+          >
+            <button class="btn btn-success px-4">Login</button>
+          </a>
+          <a
+            class="py-2 fw-medium nav-item text-dark text-decoration-none"
+            (click)="callbackService.navigate('auth/register')"
+          >
+            <button class="btn btn-outline-success px-4">Register</button>
+          </a>
+        </div>
+      }
     </div>
   </nav>
 </header>
+<div class="position-relative d-lg-none">
+  <span
+    class="input-group-text border-0 bg-light cursor-pointer rounded-3"
+    (click)="clicked.set(!clicked())"
+  >
+    <lucide-angular name="search" size="18"></lucide-angular>
+  </span>
+  <input
+    type="text"
+    [formControl]="searchControl"
+    class="form-control border-0 bg-light py-2 small d-none d-lg-inline"
+    [class.d-flex]="clicked()"
+    [class.d-none]="!clicked()"
+    placeholder="What are you looking for?"
+  />
+  @if (searchResults().length > 0 || search() !== '') {
+    <div
+      class="position-absolute top-100 start-0 w-100 mt-1 shadow-sm rounded-2 border bg-white overflow-auto"
+      style="max-height: 300px; z-index: 1000"
+    >
+      @for (product of searchResults(); track product._id) {
+        <div
+          class="p-2 border-bottom search-item cursor-pointer"
+          style="z-index: 333 !important; background-color: #eee"
+          (click)="productDetails(product._id)"
+        >
+          <div class="d-flex align-items-center gap-2 w-100">
+            <img
+              [src]="product.image"
+              style="width: 30px; height: 30px; object-fit: cover"
+              class="rounded"
+            />
+            <span class="small text-dark">{{ product.name }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

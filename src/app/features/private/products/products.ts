@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, HostListener, inject, OnInit, signal } from '@angular/core';
 import { ProductService } from '../../../core/services/poduct.service';
 import { Product } from '../../../lib/types/product';
 import { ToastrService } from 'ngx-toastr';
@@ -11,27 +11,41 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class Products implements OnInit {
   // --- Injectable ---
-  public homeService = inject(ProductService);
+  public productService = inject(ProductService);
   // Inject Toaster
   toaster = inject(ToastrService);
 
   // --- Signals ---
   public products = signal<Product[]>([]);
-  public productStats = signal([
-    { title: 'Total Products', count: 194 },
-    { title: 'Active', count: 180 },
-    { title: 'Low Stock', count: 10 },
-    { title: 'Out of Stock', count: 4 },
-  ]);
+  public pagination = signal<{
+    currentPage: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  } | null>(null);
 
   // Track the ID of the active menu
-  activeMenuId = signal<number | null>(null);
+  activeMenuId = signal<string | null>(null);
 
-  openUpdate = signal(false);
-  openDelete = signal(false);
-  openAdd = signal(false);
-  productId = signal(NaN);
+  onUpdate = signal(false);
+  onDelete = signal(false);
+  onAdd = signal(false);
+  productId = signal<string>('');
 
+  private refreshTrigger = signal<number>(0);
+
+  constructor() {
+    effect(() => {
+      const trigger = this.refreshTrigger();
+      console.log('Refresh triggered! Execution count:', trigger);
+      this.getData();
+    });
+  }
+  triggerRefresh() {
+    this.refreshTrigger.update((v) => v + 1);
+    this.onUpdate.set(false);
+    this.onDelete.set(false);
+  }
   // --- Ng OnInit ---
   ngOnInit(): void {
     this.getData();
@@ -47,9 +61,10 @@ export class Products implements OnInit {
 
   // Get All Products
   getData() {
-    this.homeService.getProducts().subscribe({
+    this.productService.getProducts().subscribe({
       next: (payload) => {
-        this.products.set(payload.products);
+        this.products.set(payload.data);
+        this.pagination.set(payload.pagination);
       },
       error: (err) => {
         // Future: Be A UI Component For The Error
@@ -58,27 +73,39 @@ export class Products implements OnInit {
     });
   }
 
-  toggleMenu(id: number, event: Event) {
+  toggleMenu(id: string, event: Event) {
     event.stopPropagation(); // Prevents the row click from firing
     this.activeMenuId.set(this.activeMenuId() === id ? null : id);
+    this.productId.set(id);
+    this.onUpdate.set(false);
+    this.onDelete.set(false);
+    this.onAdd.set(false);
   }
 
-  onDelete(id: number) {
-    this.productId.set(id);
-    this.openDelete.set(true);
-    this.openUpdate.set(false);
-    this.openAdd.set(false);
+  confirmAction(form: any) {
+    if (form?.productId) {
+      this.productService.addProduct(form).subscribe({
+        next: (payload) => {
+          console.log(payload);
+        },
+        error: (err) => {
+          console.log(err.error.message);
+        },
+      });
+    } else {
+      this.productService.addProduct(form).subscribe({
+        next: (payload) => {
+          console.log(payload);
+        },
+        error: (err) => {
+          console.log(err.error.message);
+        },
+      });
+    }
   }
 
-  onUpdate(id: number) {
-    this.productId.set(id);
-    this.openUpdate.set(true);
-    this.openDelete.set(false);
-    this.openAdd.set(false);
-  }
-  onAdd() {
-    this.openAdd.set(true);
-    this.openDelete.set(false);
-    this.openUpdate.set(false);
+  deleteAction(isDeleted: boolean) {
+    if (isDeleted) {
+    }
   }
 }

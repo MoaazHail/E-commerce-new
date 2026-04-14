@@ -11,7 +11,7 @@ const routes: Routes = [
   {
     path: '',
     component: DashboardLayout,
-    // canActivate: [adminGuard], // The API Not Has A Rule !!!
+    canActivate: [adminGuard], // The API Not Has A Rule !!!
     children: [
       { path: '', component: Dashboard, pathMatch: 'full' },
       { path: 'products', component: Products, pathMatch: 'full' },

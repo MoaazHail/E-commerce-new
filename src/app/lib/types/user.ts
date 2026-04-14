@@ -1,12 +1,13 @@
 export interface User {
-  accessToken: string;
+  age: number;
+  createdAt: string;
+  deletedAt: null;
   email: string;
-  firstName: string;
-  gender: string;
-  id: 1;
-  image: string;
-  lastName: string;
-  refreshToken: string;
-  username: string;
-  role: 'admin' | null;
+  gender?: 'male' | 'female';
+  nameDetails: { firstName: string; maidenName: string; lastName: string };
+  password: string;
+  role?: 'user' | 'admin';
+  updatedAt: string;
+  __v: number;
+  _id: string;
 }

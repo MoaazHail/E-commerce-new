@@ -4,6 +4,7 @@ import { ProductService } from '../../../core/services/poduct.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../lib/types/product';
 import { ToastrService } from 'ngx-toastr';
+import { CartService } from '../../../core/services/cart.service';
 
 @Component({
   selector: 'app-product-details',
@@ -21,15 +22,17 @@ export class ProductDetails implements OnInit {
 
   // Inject Toastr
   private _toaster = inject(ToastrService);
+
   // Inject Product Service
   private _productService = inject(ProductService);
 
+  private _cartService = inject(CartService);
   // Inject Auth Service
   private _authService = inject(AuthService);
 
   // --- Signals ---
   product = signal<Product | null>(null);
-  productId = signal<number>(NaN);
+  productId = signal<string>('');
   productsCart = signal<{ product: any; quantity: number }[]>([]);
   quantity = signal<number>(1);
   callback = signal<any>('');
@@ -44,7 +47,7 @@ export class ProductDetails implements OnInit {
     if (cart) {
       this.productsCart.set(JSON.parse(cart));
     }
-    this.productId.set(Number(this._route.snapshot.paramMap.get('id')));
+    this.productId.set(String(this._route.snapshot.paramMap.get('id')));
 
     this.getProduct();
   }
@@ -58,7 +61,9 @@ export class ProductDetails implements OnInit {
   getProduct() {
     this._productService.getProductById(this.productId()).subscribe({
       next: (payload) => {
-        this.product.set(payload);
+        console.log(payload);
+
+        this.product.set(payload.data);
       },
       error: (err) => {
         // Future: Be A UI Component For The Error
@@ -88,7 +93,7 @@ export class ProductDetails implements OnInit {
     const quantity = this.quantity();
 
     this.productsCart.update((cart) => {
-      const index = cart.findIndex((item) => item.product.id === product?.id);
+      const index = cart.findIndex((item) => item.product.id === product?._id);
 
       if (index !== -1) {
         return [...cart];
@@ -103,7 +108,7 @@ export class ProductDetails implements OnInit {
 
   // Add The Product To The Cart <User Has Token>
   addToUserCart() {
-    this._productService.addToCart(this.productId()).subscribe({
+    this._cartService.addToCart(this.productId()).subscribe({
       next: (payload: any) => {
         console.log(payload);
       },

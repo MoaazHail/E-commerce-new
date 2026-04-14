@@ -92,8 +92,8 @@
         ></span>
         <select formControlName="gender" class="form-select">
           <option value="" disabled selected>Select Gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
         </select>
       </div>
 
@@ -123,25 +123,6 @@
       (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)
     ) {
       <small class="text-danger ms-5">Email is required.</small>
-    }
-  </div>
-
-  <!-- UserName Field -->
-  <div class="w-100">
-    <label class="input-label-required fw-bold">Username</label>
-    <div class="input-group">
-      <span class="input-group-text bg-light"
-        ><lucide-icon name="at-sign" size="18"></lucide-icon
-      ></span>
-      <input type="text" class="form-control" placeholder="Username" formControlName="username" />
-    </div>
-
-    <!-- Message Error -->
-    @if (
-      registerForm.get('username')?.invalid &&
-      (registerForm.get('username')?.dirty || registerForm.get('username')?.touched)
-    ) {
-      <small class="text-danger ms-5">Username is required.</small>
     }
   </div>
 

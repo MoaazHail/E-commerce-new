@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ORDERS_INFO, STATUS_STORE } from '../../../lib/constants/dashboard.constants';
 import {
   ApexAxisChartSeries,
@@ -11,6 +11,9 @@ import {
   ApexYAxis,
 } from 'ng-apexcharts';
 import { OrdersInfo, StatusStore } from '../../../lib/types/dashboard';
+import { MyOrder } from '../../../lib/types/order';
+import { OrderService } from '../../../core/services/order.service';
+import { DashboardOrder } from '../../../lib/types/dashboard/order';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -52,12 +55,14 @@ const values: ApexAxisChartSeries = [
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
+  // ----- Injectable -----
+  private orderService = inject(OrderService);
   // Signals
   public revenueChartOptions: Partial<ChartOptions>;
   public ordersChartOptions: Partial<ChartOptions>;
   public pieChartOptions: Partial<ChartOptions>;
-  public orders = signal<OrdersInfo[]>(ORDERS_INFO);
+  public orders = signal<DashboardOrder[] | null>(null);
 
   readonly statueStore = signal<StatusStore[]>(STATUS_STORE);
 
@@ -134,5 +139,21 @@ export class Dashboard {
         formatter: (val) => `${val}%`, // Shows the percentage on the slices
       },
     };
+  }
+  ngOnInit(): void {
+    this.getAllOrder();
+  }
+
+  getAllOrder() {
+    this.orderService.getAllOrder().subscribe({
+      next: (payload) => {
+        console.log(payload.data.orders);
+        this.orders.set(payload.data.orders);
+        console.log(this.orders());
+      },
+      error: (err) => {
+        console.log(err.error.message);
+      },
+    });
   }
 }

@@ -1,20 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
-
-export const passwordMatchValidator: ValidatorFn = (
-  control: AbstractControl,
-): ValidationErrors | null => {
-  const password = control.get('password');
-  const confirmPassword = control.get('confirmPassword');
-
-  return password && confirmPassword && password.value !== confirmPassword.value
-    ? { passwordMismatch: true }
-    : null;
-};
+import { ActivatedRoute } from '@angular/router';
+import { passwordMatchValidator } from '../../../lib/validations/validator';
 
 @Component({
   selector: 'app-register',
@@ -26,6 +16,7 @@ export class Register {
   // Injectable
   private _authServer = inject(AuthService);
   private _toaster = inject(ToastrService);
+  private _route = inject(ActivatedRoute);
 
   // Signals
   showPassword = signal<boolean>(false);
@@ -42,7 +33,6 @@ export class Register {
       }),
       age: new FormControl(null, [Validators.required]),
       gender: new FormControl('', [Validators.required]),
-      username: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required]),
       confirmPassword: new FormControl(''),
@@ -61,10 +51,10 @@ export class Register {
       maidenName: this.registerForm.get('nameDetails.maidenName')?.value,
       gender: this.registerForm.get('gender')?.value,
       age: this.registerForm.get('age')?.value,
-      username: this.registerForm.get('username')?.value,
       password: this.registerForm.get('password')?.value,
       email: this.registerForm.get('email')?.value,
     };
+    console.log(values);
 
     if (this.registerForm.invalid) return;
 
@@ -72,7 +62,13 @@ export class Register {
       .register(values)
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
-        next: (data) => {
+        next: (payload) => {
+          console.log(payload);
+          this._authServer.handleLoginSuccess(
+            payload.token,
+            payload.user,
+            this._route.snapshot.queryParamMap.get('callback'),
+          );
           this._toaster.success(`Register successfully!`, 'Success');
         },
         error: (err) => {

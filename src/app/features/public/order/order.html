@@ -1,0 +1,139 @@
+<section class="row">
+  <!-- Order -->
+  <div class="col-lg-7">
+    @for (order of orders(); track order._id) {
+      <div class="border border-2 mb-4 rounded-3 overflow-hidden">
+        <div class="accordion" [id]="'accordion-' + order._id">
+          <div class="accordion-item">
+            <!-- Header -->
+            <div class="accordion-header" style="background-color: #f0f0f0">
+              <button
+                class="accordion-button collapsed gap-3 p-4"
+                type="button"
+                data-bs-toggle="collapse"
+                [attr.data-bs-target]="'#collapse-' + order._id"
+                aria-expanded="false"
+                [attr.aria-controls]="'collapse-' + order._id"
+                style="background-color: #f0f0f0; color: black"
+              >
+                <h2 class="fs-5">Order</h2>
+
+                <div
+                  class="bg-success rounded-3 p-2"
+                  [class.bg-primary]="order.isDelivered"
+                  [class.bg-warning]="!order.isDelivered"
+                  [class.text-dark]="!order.isDelivered"
+                >
+                  <span>{{ order.isDelivered | delivery }}</span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Body -->
+            <div
+              [id]="'collapse-' + order._id"
+              class="accordion-collapse collapse"
+              [attr.data-bs-parent]="'#accordion-' + order._id"
+            >
+              @for (item of order.cartItems; track item._id) {
+                <div class="accordion-body border border-b">
+                  <div class="row">
+                    <!-- Product Image -->
+                    <div class="col-lg-5">
+                      <img
+                        [src]="item.product.image"
+                        [alt]="item.product.name"
+                        style="width: 100px"
+                      />
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="col-lg-5 my-auto mx-auto">
+                      <div class="d-flex justify-content-between align-items-center gap-3">
+                        <label class="fw-bold fs-5">{{ item.product.name }}</label>
+                        <!-- Price -->
+                        <span class="text-success fw-bold fs-5">$ {{ item.price | summary }}</span>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center gap-3">
+                        <label class="fw-bold fs-5"> Quantity: </label>
+                        <span class="fs-5">{{ item.quantity }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="bg-success">
+          <div class="d-flex justify-content-between align-item-center text-white p-2 fs-6">
+            <div>
+              <span class="mx-2">Total Price: </span>
+
+              <span> $ {{ order.totalOrderPrice }} </span>
+            </div>
+
+            <span
+              class="text-decoration-underline cursor-pointer"
+              (click)="onShippingAddress(order.shippingAddress)"
+              >shipping Address</span
+            >
+          </div>
+        </div>
+      </div>
+    }
+    <!-- @if (orders()?.length > 4) {
+      Pagination
+      <nav class="mt-5">
+        <ul class="pagination gap-2 align-items-center justify-content-center">
+          <li class="page-item cursor-pointer" [class.disabled]="currentPage() === 1">
+            <a
+              class="page-link d-flex align-items-center justify-content-center"
+              (click)="changePage(currentPage() - 1)"
+              style="width: 40px; height: 40px"
+            >
+              <lucide-angular name="chevrons-left" size="16"></lucide-angular>
+            </a>
+          </li>
+
+          @for (page of visiblePages(); track page) {
+            <li class="page-item cursor-pointer" [class.active]="currentPage() === page">
+              <a
+                class="page-link d-flex align-items-center justify-content-center"
+                (click)="changePage(page)"
+                style="width: 40px; height: 40px"
+              >
+                {{ page }}
+              </a>
+            </li>
+          }
+
+          <li class="page-item cursor-pointer" [class.disabled]="currentPage() === totalPages()">
+            <a
+              class="page-link d-flex align-items-center justify-content-center"
+              (click)="changePage(currentPage() + 1)"
+              style="width: 40px; height: 40px"
+            >
+              <lucide-icon name="chevrons-right" size="16"></lucide-icon>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    } -->
+  </div>
+
+  <!-- Image -->
+  <div class="col-lg-5 d-none d-lg-flex">
+    <div class="text-center">
+      <img src="assets/orders.jpeg" alt="My Order" class="img-fluid rounded shadow-sm" />
+    </div>
+  </div>
+</section>
+
+@if (isShippingAddress()) {
+  <app-modal
+    [shippingAddress]="shippingAddress()"
+    modalType="shippingAddress"
+    (onClose)="isShippingAddress.set(false)"
+  />
+}

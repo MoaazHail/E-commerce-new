@@ -8,19 +8,10 @@ import { AuthModule } from './core/auth/auth.module';
 import { FeaturesModule } from './features/features-module';
 import { provideToastr } from 'ngx-toastr';
 import { StoreModule } from '@ngrx/store';
-import { appReducer } from './shared/store/app.state';
 
 @NgModule({
   declarations: [App],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    CoreModule,
-    SharedModule,
-    AuthModule,
-    FeaturesModule,
-    StoreModule.forRoot(appReducer),
-  ],
+  imports: [BrowserModule, AppRoutingModule, CoreModule, SharedModule, AuthModule, FeaturesModule],
   providers: [
     provideBrowserGlobalErrorListeners(),
     // For animations ??

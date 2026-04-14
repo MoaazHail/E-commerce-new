@@ -10,12 +10,12 @@
 
   <!-- Products -->
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center gap-3">
-    @for (product of products(); track product.id) {
+    @for (product of products(); track product._id) {
       <div class="card product-card border-0 h-100 p-0" style="width: 18rem">
         <div class="product-img-container position-relative bg-light rounded overflow-hidden p-3">
-          <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-3 py-2"
+          <!-- <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-3 py-2"
             >-{{ product.discountPercentage }}%</span
-          >
+          > -->
 
           <!-- Action Button -->
           <div
@@ -31,7 +31,7 @@
             <!-- Product Details -->
             <button
               class="btn btn-white rounded-circle shadow-sm border-0 p-2 d-flex align-items-center justify-content-center"
-              (click)="productDetails(product.id)"
+              (click)="productDetails(product._id)"
             >
               <lucide-icon name="eye" size="20"></lucide-icon>
             </button>
@@ -39,18 +39,13 @@
 
           <!-- Product Image -->
           <div class="d-block mt-4 mb-5">
-            <img
-              [src]="product.thumbnail"
-              width="220"
-              height="180"
-              class="img-fluid d-block mx-auto"
-            />
+            <img [src]="product.image" width="220" height="180" class="img-fluid d-block mx-auto" />
           </div>
 
           <!-- Add To Cart -->
           <button
             class="btn btn-dark add-to-cart-btn-desktop w-100 position-absolute bottom-0 start-0 py-2 d-flex align-items-center justify-content-center gap-2"
-            (click)="addToCart(product.id)"
+            (click)="addToCart(product._id)"
           >
             <lucide-icon name="shopping-cart" size="18"></lucide-icon>
             Add to Cart
@@ -60,14 +55,14 @@
         <!-- Product Info -->
         <div class="card-body py-3 mt-1">
           <!-- Product Title -->
-          <h5 class="card-title fw-semibold mb-1">{{ product.title }}</h5>
+          <h5 class="card-title fw-semibold mb-1">{{ product.name }}</h5>
 
           <!-- Product Price -->
           <div class="d-flex align-items-center gap-3 mb-2">
             <span class="text-success fw-bold fs-5">${{ product.price }}</span>
-            <span class="text-muted text-decoration-line-through fs-6"
+            <!-- <span class="text-muted text-decoration-line-through fs-6"
               >${{ product.discountPercentage + product.price }}</span
-            >
+            > -->
           </div>
 
           <!-- Product Rating -->

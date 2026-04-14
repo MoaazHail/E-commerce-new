@@ -25,7 +25,7 @@ export class Login {
 
   // Forms
   public loginForm: FormGroup = new FormGroup({
-    username: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(8)]),
   });
 
@@ -39,11 +39,13 @@ export class Login {
       .login(this.loginForm.value)
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
-        next: (data) => {
+        next: (payload) => {
+          console.log(payload);
+
           this._toaster.success(`Login successfully!`, 'Success');
           this._authService.handleLoginSuccess(
-            data.accessToken,
-            data,
+            payload.token,
+            payload.user,
             this._route.snapshot.queryParamMap.get('callback'),
           );
         },

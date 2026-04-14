@@ -1,7 +1,6 @@
 interface LoginForm {
-  username: string;
+  email: string;
   password: string;
-  expiresInMins?: number;
 }
 
 interface RegisterForm {
@@ -9,7 +8,6 @@ interface RegisterForm {
   maidenName: string;
   lastName: string;
   gender?: 'male' | 'female';
-  username: string;
   email: string;
   password: string;
   age: number;
