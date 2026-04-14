@@ -7,6 +7,8 @@ import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
 import { CategoryService } from '../../../core/services/category.service';
 import { Categories } from '../../../lib/types/category';
+import { WishlistService } from '../../../core/services/wishlist.service';
+import { CartService } from '../../../core/services/cart.service';
 
 @Component({
   selector: 'app-home',
@@ -23,7 +25,10 @@ export class Home implements OnInit {
   private _toaster = inject(ToastrService);
 
   // Inject Product Service
-  private _homeService = inject(ProductService);
+  private _productService = inject(ProductService);
+
+  // Inject Cart Service
+  private _cartService = inject(CartService);
 
   // Inject Auth Service
   private _authService = inject(AuthService);
@@ -31,10 +36,13 @@ export class Home implements OnInit {
   // Inject Category Service
   private _categoryService = inject(CategoryService);
 
+  private _wishlistService = inject(WishlistService);
+
   // ------- Signals --------
   categories = signal<Categories[] | null>(null);
   products = signal<Product[]>([]);
   todays = signal<Product[]>([]);
+  defaultImage = signal('assets/no-item.png');
 
   // Flags
   isLoading = signal<boolean>(false);
@@ -49,25 +57,20 @@ export class Home implements OnInit {
   // Pagination Signals
   limit = signal(9);
   currentPage = signal(1);
-  totalItems = signal(194);
+  totalItems = signal(54);
+
+  // Computed total pages based on signals
   totalPages = computed(() => Math.ceil(this.totalItems() / this.limit()));
 
   visiblePages = computed(() => {
     const current = this.currentPage();
     const max = this.totalPages();
 
-    // If we are at the beginning
+    if (max <= 0) return [];
     if (current <= 1) return [1, 2, 3].filter((p) => p <= max);
-
-    // If we are at the end
     if (current >= max) return [max - 2, max - 1, max].filter((p) => p > 0);
-
-    // If we are in the middle, show [previous, current, next]
     return [current - 1, current, current + 1];
   });
-
-  // Skip is now a computed value based on page and limit
-  skip = computed(() => (this.currentPage() - 1) * this.limit());
 
   ngOnInit(): void {
     // Initialize Signal from LocalStorage immediately
@@ -93,12 +96,12 @@ export class Home implements OnInit {
   getData() {
     this.isLoading.set(true);
     // Use the values from your signals
-    this._homeService
-      .getAllProducts(this.skip(), this.limit())
+    this._productService
+      .getAllProducts(this.currentPage(), this.limit())
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (payload) => {
-          this.products.set(payload.products);
+          this.products.set(payload.data);
           this.isLoading.set(false);
           console.log(payload.products);
         },
@@ -113,13 +116,12 @@ export class Home implements OnInit {
   getTodos() {
     this.isLoading.set(true);
     // Use the values from your signals
-    this._homeService
+    this._productService
       .getTodays()
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (payload) => {
-          this.todays.set(payload.products);
-          console.log(this.todays());
+          this.todays.set(payload.data);
 
           this.isLoading.set(false);
         },
@@ -131,48 +133,18 @@ export class Home implements OnInit {
   }
 
   // Redirect To Product Details Page
-  productDetails(id: number) {
+  productDetails(id: string) {
     // Add callback Param To url
     const callback = this._router.url;
 
-    this._router.navigate(['products', id], {
-      queryParams: {
-        callback: `/limit=${this.limit()}&page=${this.currentPage()}&skip=${this.skip()}&select=title,price`,
-      },
-    });
+    this._router.navigate(['products', id]);
     // console.log(callback);
   }
 
-  addToCart(id: number, type: string) {
-    console.log(id);
-
-    if (this._authService.isAuthenticated()) {
-      this.addToUserCart(id);
-      console.log('isAuthenticated');
-    } else {
-      this.addToGustCart(id, type);
-      console.log('Not Authenticated');
-    }
-  }
-
-  // Add Product To User Cart
-  addToUserCart(id: number) {
-    this._homeService.addToCart(id).subscribe({
-      next: (_) => {
-        //Add Toaster To UX
-        this._toaster.success(`product added to cart!`, 'Success');
-      },
-      error: (err) => {
-        // Future: Be A UI Component For The Error
-        console.log(err.error.message);
-      },
-    });
-  }
-
   // Add Product To Gust Cart
-  addToGustCart(id: number, type: string) {
+  addToGustCart(id: string, type: string) {
     if (type === 'product') {
-      const product = this.products().find((p) => p.id === id);
+      const product = this.products().find((p) => p._id === id);
       if (!product) return;
 
       const quantity = this.quantity();
@@ -180,17 +152,17 @@ export class Home implements OnInit {
       this.productsCart.update((cart) => {
         const safeCart = Array.isArray(cart) ? cart : [];
 
-        const index = safeCart.findIndex((item) => item.product?.id === id);
+        const index = safeCart.findIndex((item) => item.product?._id === id);
 
         if (index !== -1) {
           return [...safeCart];
         }
-
+        this._cartService.productsCart.update((last) => last + 1);
         // Add new product
         return [...safeCart, { product, quantity }];
       });
     } else if (type === 'todays') {
-      const product = this.todays().find((p) => p.id === id);
+      const product = this.todays().find((p) => p._id === id);
       if (!product) return;
 
       const quantity = this.quantity();
@@ -198,12 +170,12 @@ export class Home implements OnInit {
       this.productsCart.update((cart) => {
         const safeCart = Array.isArray(cart) ? cart : [];
 
-        const index = safeCart.findIndex((item) => item.product?.id === id);
+        const index = safeCart.findIndex((item) => item.product?._id === id);
 
         if (index !== -1) {
           return [...safeCart];
         }
-
+        this._cartService.productsCart.update((last) => last + 1);
         // Add new product
         return [...safeCart, { product, quantity }];
       });
@@ -212,25 +184,28 @@ export class Home implements OnInit {
     // Save updated signal to storage
     localStorage.setItem('my-cart', JSON.stringify(this.productsCart()));
 
+    // Add Product
+
+    console.log(this._cartService.productsCart());
+
     // Toaster
     this._toaster.success(`product added to cart!`, 'Success');
   }
 
   changePage(page: number) {
-    const max = Math.ceil(this.totalItems() / this.limit());
+    const max = this.totalPages();
+
+    // Guard clause: stay within bounds and avoid redundant navigation
     if (page < 1 || page > max || page === this.currentPage()) return;
 
-    // Navigate to the same route but with new params
-    // This will trigger the subscribe block in ngOnInit
     this._router.navigate([], {
       relativeTo: this.route,
       queryParams: {
+        page: page, // Now using page instead of skip
         limit: this.limit(),
-        page: page,
-        skip: (page - 1) * this.limit(),
         select: 'title,price',
       },
-      queryParamsHandling: 'merge', // keeps other params if you have them
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -238,19 +213,17 @@ export class Home implements OnInit {
     this.isLoading.set(true);
     this._categoryService
       .getAllCategories()
-      .pipe(finalize(() => this.isLoading.set(false)))
+      // .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (payload) => {
-          console.log('categories');
+          // console.log(payload.data.categories);
 
-          console.log(payload);
-
-          this.categories.set(payload);
-          this.isLoading.set(false);
+          this.categories.set(payload.data.categories);
+          // this.isLoading.set(false);
         },
         error: (err) => {
           console.error(err);
-          this.isLoading.set(false);
+          // this.isLoading.set(false);
         },
       });
   }
@@ -258,10 +231,18 @@ export class Home implements OnInit {
   // Redirect To Category Page
   categoryBySlogan(slog: string) {
     // Add callback Param To url
-    const callback = this._router.url;
-    this._router.navigate(['category', slog], {
-      queryParams: {
-        callback,
+    // const callback = this._router.url;
+    this._router.navigate(['category', slog]);
+  }
+
+  // Add Or Remove Item In Wishlist
+  toggleWishlist(productId: string) {
+    this._wishlistService.toggleWishlist(productId).subscribe({
+      next: (_) => {
+        this._toaster.success(`product add in wishlist !`, 'Success');
+      },
+      error(err) {
+        console.log(err.error.message);
       },
     });
   }

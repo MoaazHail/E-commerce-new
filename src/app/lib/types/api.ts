@@ -1,6 +1,11 @@
 export interface ResponseApi<T> {
-  limit: number;
-  products: T;
-  skip: number;
-  total: number;
+  status: string;
+  results: number;
+  pagination: {
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+    limit: number;
+  };
+  data: T[];
 }

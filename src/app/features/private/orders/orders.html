@@ -9,13 +9,14 @@
 </header>
 
 <div
-  class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4"
+  class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4 overflow-scroll"
 >
   <table class="table table-hover">
     <thead>
       <tr>
         <th scope="col">Order ID</th>
         <th scope="col">Customer</th>
+        <th scope="col">Phone</th>
         <th scope="col">Product</th>
         <th scope="col">Date</th>
         <th scope="col">Amount</th>
@@ -24,35 +25,53 @@
       </tr>
     </thead>
     <tbody>
-      @for (order of orders(); track order.id) {
+      @for (order of orders(); track order._id) {
         <tr class="">
-          <th scope="row"># {{ order.id }}</th>
-          <td>{{ order.username }}</td>
-          <td>{{ order.products[0].title }}</td>
-          <td>../../....</td>
-          <td>$ {{ order.total }}</td>
-          <td>{{ order.isCompleted | orderPipe }}</td>
+          <th scope="row"># {{ order._id }}</th>
+          <td>{{ order.user.email }}</td>
+          <td>{{ order.shippingAddress?.phone ? order.shippingAddress?.phone : '' }}</td>
+          <td class="d-flex flex-column">
+            @for (products of order.cartItems; track products.product) {
+              <p>
+                {{ products.product.name }}
+              </p>
+            }
+          </td>
+          <td>{{ order.updatedAt | date: 'dd/MM/yyyy' }}</td>
+          <td>$ {{ order.totalOrderPrice }}</td>
+          <td>
+            <div
+              class="p-2 bg-warning"
+              [class.btn-success]="order.isDelivered"
+              [class.bg-warning]="order.isDelivered"
+            >
+              {{ order.isDelivered | orderPipe }}
+            </div>
+          </td>
           <td class="position-relative">
             <div
               class="p-2 bg-light rounded-circle cursor-pointer text-center"
               style="width: 35px; height: 35px"
-              (click)="toggleMenu(order.id, $event)"
+              (click)="toggleMenu(order._id, $event)"
             >
               <lucide-icon name="ellipsis" size="18" />
             </div>
 
-            @if (activeMenuId() === order.id) {
+            @if (activeMenuId() === order._id) {
               <div
-                class="action-menu shadow-lg border rounded-3 bg-white p-2 animate__animated animate__fadeIn"
+                class="action-menu position-absolute shadow-lg border rounded-3 bg-white p-2 animate__animated animate__fadeIn"
+                style="z-index: 600 !important"
               >
                 <button
                   class="btn btn-sm btn-light w-100 text-start d-flex align-items-center gap-2 mb-1"
+                  (click)="onUpdate.set(true)"
                 >
                   <lucide-icon name="pencil" size="14" class="text-primary" />
                   Update
                 </button>
                 <button
                   class="btn btn-sm btn-light w-100 text-start d-flex align-items-center gap-2 text-danger"
+                  (click)="onDelete.set(true)"
                 >
                   <lucide-icon name="trash-2" size="14" />
                   Delete
@@ -65,3 +84,10 @@
     </tbody>
   </table>
 </div>
+
+@if (onUpdate()) {
+  <app-modal modalType="update" [id]="id()" page="dashboard/order" (onConfirm)="triggerRefresh()" />
+}
+@if (onDelete()) {
+  <app-modal modalType="delete" [id]="id()" page="dashboard/order" (onDelete)="triggerRefresh()" />
+}

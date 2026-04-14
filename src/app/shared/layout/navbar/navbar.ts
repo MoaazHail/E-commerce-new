@@ -12,6 +12,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { Router } from '@angular/router';
 import { CallbackService } from '../../../core/services/callback.service';
+import { ProductService } from '../../../core/services/poduct.service';
+import { Product } from '../../../lib/types/product';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
@@ -19,24 +23,56 @@ import { CallbackService } from '../../../core/services/callback.service';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar {
+export class Navbar implements OnInit {
   private _router = inject(Router);
   protected authService = inject(AuthService);
   public callbackService = inject(CallbackService);
-  // pages = signal()
+  private _productService = inject(ProductService);
+  private _cartService = inject(CartService);
 
   isAuth = signal(false);
-  private homeComp = inject(CartService);
-  cd = inject(ChangeDetectorRef);
+  cartCount = signal(0);
+  search = signal<string | null>(null);
+  searchControl = new FormControl('');
+  searchResults = signal<Product[]>([]);
+  clicked = signal<boolean>(false);
+
+  ngOnInit(): void {
+    this.searchControl.valueChanges
+      .pipe(debounceTime(200), distinctUntilChanged())
+      .subscribe((value) => {
+        console.log('Search Value:', value);
+        this.search.set(value);
+        if (this.search()) {
+          this.searchProduct();
+        }
+      });
+  }
 
   constructor() {
     effect(() => {
       this.isAuth.set(this.authService.isAuthenticated());
+      this.cartCount.set(this._cartService.productsCart());
+      this.search();
     });
   }
 
-  cartCount = computed(() => {
-    const items = this.homeComp.productsCart();
-    return items.reduce((total, item) => total + item.quantity, 0);
-  });
+  searchProduct() {
+    console.log('search is run');
+
+    this._productService.searchProduct(this.search(), 1, 30).subscribe({
+      next: (payload) => {
+        console.log(payload);
+        this.searchResults.set(payload.data.products);
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
+
+  productDetails(id: string) {
+    this._router.navigate(['products', id]);
+    this.searchResults.set([]);
+  }
 }

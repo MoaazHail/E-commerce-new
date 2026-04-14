@@ -1,4 +1,4 @@
-<section class="h-100 h-custom" style="background-color: #eeee">
+<section class="h-100 h-custom mb-4" style="background-color: #eeee">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col">
@@ -16,302 +16,447 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                   <div>
                     <p class="mb-1">Shopping cart</p>
-                    <p class="mb-0">
-                      You have {{ userCart()?.totalQuantity || guestCart()?.length }} items in your
-                      cart
+                    <p class="mb-0 text-capitalize">
+                      {{
+                        productsCart() === 0
+                          ? "You don't have any item in cart"
+                          : `You have ${productsCart()}  items in your cart`
+                      }}
                     </p>
                   </div>
+
+                  <button
+                    class="btn btn-success text-capitalize"
+                    [disabled]="productsCart() === 0 || isUpdated()"
+                    (click)="saveChanges()"
+                  >
+                    calculate total price
+                  </button>
                 </div>
 
-                <!-- Products -->
-                @for (
-                  product of userCart()?.products || guestCart();
-                  track product.id || product.product.id
-                ) {
-                  <div class="card mb-3">
-                    <div class="card-body">
-                      <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-row align-items-center">
-                          <!-- Product Image  -->
-                          <div>
-                            <img
-                              [src]="product.thumbnail || product.product.images[0]"
-                              class="img-fluid rounded-3"
-                              [alt]="product.title || product.product.title"
-                              style="width: 65px"
-                            />
-                          </div>
-
-                          <!-- Title -->
-                          <div class="ms-3">
-                            <h5>{{ product.title || product.product.title }}</h5>
-                          </div>
-                        </div>
-
-                        <div class="d-flex flex-row align-items-center gap-3">
-                          <!-- Quantity -->
-                          <div class="d-flex flex-row align-items-center gap-3">
-                            <!-- Add -->
-                            <button
-                              class="btn btn-sm bg-primary fs-5"
-                              type="button"
-                              (click)="increaseQuantity(product.id, product.quantity)"
-                            >
-                              <lucide-angular name="plus" [size]="15" />
-                            </button>
-
+                <!-- user Products -->
+                @if (guestCart()) {
+                  @for (item of guestCart(); track item.product._id) {
+                    <div class="card mb-3">
+                      <div class="card-body">
+                        <div class="d-flex flex-column flex-lg-row justify-content-between">
+                          <div class="d-flex flex-row align-items-center">
+                            <!-- Product Image  -->
                             <div>
-                              <h5 class="fw-normal mb-0">{{ product.quantity }}</h5>
+                              <img
+                                [src]="
+                                  item.product.image ? item.product.image : 'assets/no-item.png'
+                                "
+                                class="img-fluid rounded-3"
+                                [alt]="item.product.name"
+                                style="width: 65px"
+                              />
                             </div>
 
-                            <!-- Remove -->
+                            <!-- Title -->
+                            <div class="ms-3">
+                              <h5 class="fs-6 fs-lg-5">{{ item.product.name }}</h5>
+                            </div>
+                          </div>
+
+                          <div class="d-flex flex-row align-items-center gap-3">
+                            <!-- Quantity -->
+                            <div class="d-flex flex-row align-items-center gap-3">
+                              <!-- Increment -->
+                              <button
+                                class="btn btn-sm bg-primary"
+                                type="button"
+                                (click)="increaseUserQuantity(item.product._id, item.quantity)"
+                              >
+                                <lucide-angular name="plus" [size]="13" />
+                              </button>
+
+                              <div>
+                                <h5 class="fw-normal mb-0">{{ item.quantity }}</h5>
+                              </div>
+
+                              <!-- Decrement -->
+                              <button
+                                class="btn btn-sm bg-warning"
+                                type="button"
+                                (click)="decreaseQuantity(item.product._id, item.quantity)"
+                              >
+                                <lucide-angular name="minus" [size]="13" />
+                              </button>
+                            </div>
+
+                            <!-- Pice -->
+                            <div>
+                              <h5 class="mb-0 fs-6 fs-lg-5">
+                                $ {{ item.product.price * item.quantity | summary }}
+                              </h5>
+                            </div>
+
+                            <!-- Trash -->
                             <button
-                              class="btn btn-sm bg-warning fs-5"
-                              type="button"
-                              (click)="decreaseQuantity(product.id, product.quantity)"
+                              href="#!"
+                              class="btn btn-sm bg-danger text-white fs-6 fs-lg-5"
+                              (click)="removeItem(item.product._id)"
                             >
-                              <lucide-angular name="minus" [size]="15" />
+                              <lucide-icon name="trash-2" [size]="14" />
                             </button>
                           </div>
-
-                          <!-- Pice -->
-                          <div>
-                            <h5 class="mb-0">$ {{ product.price || product.product.price }}</h5>
-                          </div>
-
-                          <!-- Trash -->
-                          <button href="#!" class="btn btn-sm bg-danger text-white">
-                            <lucide-icon name="trash-2" />
-                          </button>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                }
-              </div>
-
-              <!-- Right column -->
-              <div class="col-lg-5">
-                <div class="card bg-primary text-white rounded-3">
-                  @if (authService.isAuthenticated()) {
-                    <div class="card-body">
-                      <!-- User Image -->
-                      <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="mb-0">Card details</h5>
-                        <img
-                          src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
-                          class="img-fluid rounded-3"
-                          style="width: 45px"
-                          alt="Avatar"
-                        />
-                      </div>
-
-                      <!-- Form -->
-                      <form class="mt-4">
-                        <!-- Felid -->
-                        <div data-mdb-input-init class="form-outline form-white mb-4">
-                          <input
-                            type="text"
-                            id="typeName"
-                            class="form-control form-control-lg"
-                            size="17"
-                            placeholder="Cardholder's Name"
-                          />
-                          <label class="form-label" for="typeName">Cardholder's Name</label>
-                        </div>
-
-                        <!-- Felid -->
-                        <div data-mdb-input-init class="form-outline form-white mb-4">
-                          <input
-                            type="text"
-                            id="typeText"
-                            class="form-control form-control-lg"
-                            siez="17"
-                            placeholder="1234 5678 9012 3457"
-                            minlength="19"
-                            maxlength="19"
-                          />
-                          <label class="form-label" for="typeText">Card Number</label>
-                        </div>
-
-                        <!-- Felid -->
-                        <div class="row mb-4">
-                          <div class="col-md-6">
-                            <div data-mdb-input-init class="form-outline form-white">
-                              <input
-                                type="text"
-                                id="typeExp"
-                                class="form-control form-control-lg"
-                                placeholder="MM/YYYY"
-                                size="7"
-                                id="exp"
-                                minlength="7"
-                                maxlength="7"
-                              />
-                              <label class="form-label" for="typeExp">Expiration</label>
-                            </div>
-                          </div>
-
-                          <!-- Felid -->
-                          <div class="col-md-6">
-                            <div data-mdb-input-init class="form-outline form-white">
-                              <input
-                                type="password"
-                                id="typeText"
-                                class="form-control form-control-lg"
-                                placeholder="***"
-                                size="1"
-                                minlength="3"
-                                maxlength="3"
-                              />
-                              <label class="form-label" for="typeText">Cvv</label>
-                            </div>
-                          </div>
-                        </div>
-
-                        <hr class="my-4" />
-
-                        <!-- Shipping -->
-                        <div class="d-flex justify-content-between">
-                          <p class="mb-2">Shipping</p>
-                          <p class="mb-2">$20.00</p>
-                        </div>
-
-                        <!-- Total -->
-                        <div class="d-flex justify-content-between mb-4">
-                          <p class="mb-2">Total</p>
-                          <p class="mb-2">${{ total() }}</p>
-                        </div>
-
-                        <!-- Checkout Button -->
-                        <button
-                          type="button"
-                          data-mdb-button-init
-                          data-mdb-ripple-init
-                          class="btn btn-info btn-block btn-lg"
-                        >
-                          <div class="d-flex justify-content-between gap-2">
-                            <span>${{ total() }}</span>
-                            <span>Checkout</span>
-                          </div>
-                        </button>
-                      </form>
-                    </div>
-                  } @else {
-                    <div class="card-body position-relative">
-                      <div class="bg-blur">
-                        <div class="bg-white p-4 text-dark fs-4 rounded-3">
-                          <p>Your are not login ??!</p>
-                          <p>
-                            please <a (click)="navigate()" class="text-uppercase">Login</a> to
-                            continue
-                          </p>
-                        </div>
-                      </div>
-                      <!-- User Image -->
-                      <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="mb-0">Card details</h5>
-                        <img
-                          src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
-                          class="img-fluid rounded-3"
-                          style="width: 45px"
-                          alt="Avatar"
-                        />
-                      </div>
-
-                      <!-- Form -->
-                      <form class="mt-4">
-                        <!-- Felid -->
-                        <div data-mdb-input-init class="form-outline form-white mb-4">
-                          <input
-                            type="text"
-                            id="typeName"
-                            class="form-control form-control-lg"
-                            size="17"
-                            placeholder="Cardholder's Name"
-                          />
-                          <label class="form-label" for="typeName">Cardholder's Name</label>
-                        </div>
-
-                        <!-- Felid -->
-                        <div data-mdb-input-init class="form-outline form-white mb-4">
-                          <input
-                            type="text"
-                            id="typeText"
-                            class="form-control form-control-lg"
-                            siez="17"
-                            placeholder="1234 5678 9012 3457"
-                            minlength="19"
-                            maxlength="19"
-                          />
-                          <label class="form-label" for="typeText">Card Number</label>
-                        </div>
-
-                        <!-- Felid -->
-                        <div class="row mb-4">
-                          <div class="col-md-6">
-                            <div data-mdb-input-init class="form-outline form-white">
-                              <input
-                                type="text"
-                                id="typeExp"
-                                class="form-control form-control-lg"
-                                placeholder="MM/YYYY"
-                                size="7"
-                                id="exp"
-                                minlength="7"
-                                maxlength="7"
-                              />
-                              <label class="form-label" for="typeExp">Expiration</label>
-                            </div>
-                          </div>
-
-                          <!-- Felid -->
-                          <div class="col-md-6">
-                            <div data-mdb-input-init class="form-outline form-white">
-                              <input
-                                type="password"
-                                id="typeText"
-                                class="form-control form-control-lg"
-                                placeholder="***"
-                                size="1"
-                                minlength="3"
-                                maxlength="3"
-                              />
-                              <label class="form-label" for="typeText">Cvv</label>
-                            </div>
-                          </div>
-                        </div>
-
-                        <hr class="my-4" />
-
-                        <!-- Shipping -->
-                        <div class="d-flex justify-content-between">
-                          <p class="mb-2">Shipping</p>
-                          <p class="mb-2">$20.00</p>
-                        </div>
-
-                        <!-- Total -->
-                        <div class="d-flex justify-content-between mb-4">
-                          <p class="mb-2">Total</p>
-                          <p class="mb-2">${{ total() }}</p>
-                        </div>
-
-                        <!-- Checkout Button -->
-                        <button
-                          type="button"
-                          data-mdb-button-init
-                          data-mdb-ripple-init
-                          class="btn btn-info btn-block btn-lg"
-                        >
-                          <div class="d-flex justify-content-between gap-2">
-                            <span>${{ total() }}</span>
-                            <span>Checkout</span>
-                          </div>
-                        </button>
-                      </form>
                     </div>
                   }
-                </div>
+                } @else {
+                  <h1 class="py-4">Don't have a cart items</h1>
+                }
+
+                <button
+                  class="btn btn-lg btn-danger w-100"
+                  [disabled]="productsCart() === 0"
+                  (click)="deleteCart()"
+                >
+                  Delete All Cart
+                </button>
+              </div>
+              <!-- Right column -->
+              <div class="col-lg-5">
+                @if (authService.isAuthenticated()) {
+                  <div class="d-flex justify-content-center align-items-center gap-4 py-3">
+                    <button
+                      class="btn btn-success d-flex flex-column px-4 justify-content-center align-items-center gap-1"
+                      (click)="checkoutType.set('Cash')"
+                    >
+                      <lucide-angular name="banknote-arrow-up" [size]="50" class="text-light" />
+                      <span> Cash </span>
+                    </button>
+
+                    <button
+                      class="btn btn-primary d-flex flex-column px-4 justify-content-center align-items-center gap-1"
+                      (click)="checkoutType.set('Visa')"
+                    >
+                      <lucide-angular name="credit-card" [size]="50" class="text-light" />
+                      <span> Online </span>
+                    </button>
+                  </div>
+                }
+
+                @if (checkoutType() === 'Visa') {
+                  <div class="card bg-primary text-white rounded-3">
+                    @if (authService.isAuthenticated()) {
+                      <div class="card-body">
+                        <!-- User Image -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                          <h5 class="mb-0">Card details</h5>
+                          <img
+                            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
+                            class="img-fluid rounded-3"
+                            style="width: 45px"
+                            alt="Avatar"
+                          />
+                        </div>
+
+                        <!-- Form -->
+                        <form class="mt-4">
+                          <!-- Felid -->
+                          <div data-mdb-input-init class="form-outline form-white mb-4">
+                            <input
+                              type="text"
+                              id="typeName"
+                              class="form-control form-control-lg"
+                              size="17"
+                              placeholder="Cardholder's Name"
+                            />
+                            <label class="form-label" for="typeName">Cardholder's Name</label>
+                          </div>
+
+                          <!-- Felid -->
+                          <div data-mdb-input-init class="form-outline form-white mb-4">
+                            <input
+                              type="text"
+                              id="typeText"
+                              class="form-control form-control-lg"
+                              size="17"
+                              placeholder="1234 5678 9012 3457"
+                              minlength="19"
+                              maxlength="19"
+                            />
+                            <label class="form-label" for="typeText">Card Number</label>
+                          </div>
+
+                          <!-- Felid -->
+                          <div class="row mb-4">
+                            <div class="col-md-6">
+                              <div data-mdb-input-init class="form-outline form-white">
+                                <input
+                                  type="text"
+                                  id="typeExp"
+                                  class="form-control form-control-lg"
+                                  placeholder="MM/YYYY"
+                                  size="7"
+                                  id="exp"
+                                  minlength="7"
+                                  maxlength="7"
+                                />
+                                <label class="form-label" for="typeExp">Expiration</label>
+                              </div>
+                            </div>
+
+                            <!-- Felid -->
+                            <div class="col-md-6">
+                              <div data-mdb-input-init class="form-outline form-white">
+                                <input
+                                  type="password"
+                                  id="typeText"
+                                  class="form-control form-control-lg"
+                                  placeholder="***"
+                                  size="1"
+                                  minlength="3"
+                                  maxlength="3"
+                                />
+                                <label class="form-label" for="typeText">Cvv</label>
+                              </div>
+                            </div>
+                          </div>
+
+                          <hr class="my-4" />
+
+                          <!-- Total -->
+                          <div class="d-flex justify-content-between mb-4">
+                            <p class="mb-2">Total</p>
+                            <p class="mb-2">${{ guestCart()?.length }}</p>
+                          </div>
+
+                          <!-- Checkout Button -->
+                          <button
+                            type="button"
+                            data-mdb-button-init
+                            data-mdb-ripple-init
+                            class="btn btn-outline-light btn-block btn-lg w-100"
+                          >
+                            <div class="d-flex justify-content-center gap-2">
+                              <span>${{ totalPrice() }}</span>
+                              <span>Checkout</span>
+                            </div>
+                          </button>
+                        </form>
+                      </div>
+                    } @else {
+                      <div class="card-body position-relative">
+                        <div class="bg-blur">
+                          <div class="bg-white p-4 text-dark fs-4 rounded-3">
+                            <p>Your are not login ??!</p>
+                            <p>
+                              please <a (click)="navigate()" class="text-uppercase">Login</a> to
+                              continue
+                            </p>
+                          </div>
+                        </div>
+                        <!-- User Image -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                          <h5 class="mb-0">Card details</h5>
+                          <img
+                            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
+                            class="img-fluid rounded-3"
+                            style="width: 45px"
+                            alt="Avatar"
+                          />
+                        </div>
+
+                        <!-- Form -->
+                        <form class="mt-4">
+                          <!-- Felid -->
+                          <div data-mdb-input-init class="form-outline form-white mb-4">
+                            <input
+                              type="text"
+                              id="typeName"
+                              class="form-control form-control-lg"
+                              size="17"
+                              placeholder="Cardholder's Name"
+                            />
+                            <label class="form-label" for="typeName">Cardholder's Name</label>
+                          </div>
+
+                          <!-- Felid -->
+                          <div data-mdb-input-init class="form-outline form-white mb-4">
+                            <input
+                              type="text"
+                              id="typeText"
+                              class="form-control form-control-lg"
+                              size="17"
+                              placeholder="1234 5678 9012 3457"
+                              minlength="19"
+                              maxlength="19"
+                            />
+                            <label class="form-label" for="typeText">Card Number</label>
+                          </div>
+
+                          <!-- Felid -->
+                          <div class="row mb-4">
+                            <div class="col-md-6">
+                              <div data-mdb-input-init class="form-outline form-white">
+                                <input
+                                  type="text"
+                                  id="typeExp"
+                                  class="form-control form-control-lg"
+                                  placeholder="MM/YYYY"
+                                  size="7"
+                                  id="exp"
+                                  minlength="7"
+                                  maxlength="7"
+                                />
+                                <label class="form-label" for="typeExp">Expiration</label>
+                              </div>
+                            </div>
+
+                            <!-- Felid -->
+                            <div class="col-md-6">
+                              <div data-mdb-input-init class="form-outline form-white">
+                                <input
+                                  type="password"
+                                  id="typeText"
+                                  class="form-control form-control-lg"
+                                  placeholder="***"
+                                  size="1"
+                                  minlength="3"
+                                  maxlength="3"
+                                />
+                                <label class="form-label" for="typeText">Cvv</label>
+                              </div>
+                            </div>
+                          </div>
+
+                          <hr class="my-4" />
+
+                          <!-- Shipping -->
+                          <div class="d-flex justify-content-between">
+                            <p class="mb-2">Shipping</p>
+                            <p class="mb-2">$20.00</p>
+                          </div>
+
+                          <!-- Total -->
+                          <div class="d-flex justify-content-between mb-4">
+                            <p class="mb-2">Total</p>
+                            <p class="mb-2">$</p>
+                          </div>
+
+                          <!-- Checkout Button -->
+                          <button
+                            type="button"
+                            data-mdb-button-init
+                            data-mdb-ripple-init
+                            class="btn btn-info btn-block btn-lg"
+                          >
+                            <div class="d-flex justify-content-between gap-2">
+                              <span>$</span>
+                              <span>Checkout</span>
+                            </div>
+                          </button>
+                        </form>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="bg-success w-100 rounded-2 border border-success border-3 p-2">
+                    <!-- Title -->
+                    <h4 class="bg-success p-4 text-white pt-3">Address Information</h4>
+
+                    <!-- Form -->
+                    <form [formGroup]="addressForm" class="bg-light p-2 rounded-2">
+                      <!-- Details Field -->
+                      <div class="mb-4">
+                        <label class="form-label" for="typeText">Details</label>
+                        <input
+                          type="text"
+                          class="form-control border border-success border-3"
+                          placeholder="Enter Your Address Details"
+                          formControlName="details"
+                        />
+
+                        <!-- Error Message -->
+                        @if (
+                          addressForm.get('details')?.invalid &&
+                          (addressForm.get('details')?.dirty || addressForm.get('details')?.touched)
+                        ) {
+                          <small class="text-danger ms-5">details is required.</small>
+                        }
+                      </div>
+
+                      <div class="mb-4">
+                        <label class="form-label" for="typeText">Phone</label>
+                        <input
+                          type="text"
+                          class="form-control border border-success border-3"
+                          placeholder="Enter Your Phone"
+                          formControlName="phone"
+                        />
+
+                        <!-- Error Message -->
+                        @if (
+                          addressForm.get('phone')?.invalid &&
+                          (addressForm.get('phone')?.dirty || addressForm.get('phone')?.touched)
+                        ) {
+                          <small class="text-danger ms-5">phone is required.</small>
+                          @if (
+                            (addressForm.get('phone')?.invalid &&
+                              addressForm.get('phone')?.errors?.['pattern']) ||
+                            addressForm.get('phone')?.touched
+                          ) {
+                            <div class="d-flex flex-column">
+                              <small class="text-danger ms-5">Phone number is not correct.</small>
+                              <small class="text-danger ms-5"
+                                >Only Egyptian mobile numbers allowed (010, 011, 012, 015).</small
+                              >
+                            </div>
+                          }
+                        }
+                      </div>
+
+                      <div class="mb-4">
+                        <label class="form-label" for="typeText">City</label>
+                        <input
+                          type="text"
+                          class="form-control border border-success border-3"
+                          placeholder="Enter Your City"
+                          formControlName="city"
+                        />
+
+                        <!-- Error Message -->
+                        @if (
+                          addressForm.get('city')?.invalid &&
+                          (addressForm.get('city')?.dirty || addressForm.get('city')?.touched)
+                        ) {
+                          <small class="text-danger ms-5">city is required.</small>
+                        }
+                      </div>
+
+                      <div class="mb-4">
+                        <label class="form-label" for="typeText">PostalCode</label>
+                        <input
+                          type="text"
+                          class="form-control border border-success border-3"
+                          placeholder="Enter Your PostalCode"
+                          formControlName="postalCode"
+                        />
+
+                        <!-- Error Message -->
+                        @if (
+                          addressForm.get('postalCode')?.invalid &&
+                          (addressForm.get('postalCode')?.dirty ||
+                            addressForm.get('postalCode')?.touched)
+                        ) {
+                          <small class="text-danger ms-5">postalCode is required.</small>
+                        }
+                      </div>
+
+                      <button
+                        class="btn btn-lg btn-success w-100"
+                        [disabled]="addressForm.invalid"
+                        (click)="CreateCashOrder()"
+                      >
+                        ${{ totalPrice() }} Order Now
+                      </button>
+                    </form>
+                  </div>
+                }
               </div>
             </div>
           </div>
@@ -320,3 +465,7 @@
     </div>
   </div>
 </section>
+
+@if (isError()) {
+  <app-modal modalType="error" [errorMessage]="isError()" />
+}

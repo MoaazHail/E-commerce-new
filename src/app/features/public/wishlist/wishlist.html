@@ -1,0 +1,118 @@
+<section class="container my-5">
+  @if (products().length === 0) {
+    <div class="d-flex flex-column justify-content-center">
+      <h1 class="text-center">
+        You don't have <span class="text-success">products in wishlist ..!</span>
+      </h1>
+      <div class="text-center">
+        <img src="assets/no-item.png" alt="Don't have Items" width="400" />
+      </div>
+      <a routerLink="/" class="btn btn-success text-capitalize"> continua shopping </a>
+    </div>
+  } @else {
+    <!-- Section Title -->
+    <h1 class="section-title" id="#products">My Wishlist</h1>
+
+    <h2 class="fw-bold m-0 my-4">Explore Our Products</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center gap-3">
+      @for (product of products(); track product._id) {
+        <div
+          class="card product-card border-0 h-100 p-0"
+          style="width: 18rem; height: 30rem !important"
+        >
+          <div class="product-img-container position-relative bg-light rounded overflow-hidden p-3">
+            <!-- Action Button -->
+            <div
+              class="action-buttons-group position-absolute top-0 end-0 m-3 d-flex flex-column gap-2"
+            >
+              <!-- Product Details -->
+              <button
+                class="btn btn-white rounded-circle shadow-sm border-0 p-2 d-flex align-items-center justify-content-center"
+                (click)="productDetails(product._id)"
+              >
+                <lucide-angular name="eye" size="20"></lucide-angular>
+              </button>
+            </div>
+
+            <!-- Product Image -->
+            <div class="d-block mt-4 mb-5">
+              <img
+                [src]="product.image"
+                width="220"
+                height="180"
+                class="img-fluid d-block mx-auto"
+              />
+            </div>
+
+            <!-- Add To Cart -->
+            <button
+              class="btn btn-dark add-to-cart-btn-desktop w-100 position-absolute bottom-0 start-0 py-2 d-flex align-items-center justify-content-center gap-2"
+              (click)="addToCart(product._id, 'product')"
+            >
+              <lucide-angular name="shopping-cart" size="18"></lucide-angular>
+              Add to Cart
+            </button>
+          </div>
+
+          <!-- Product Info -->
+          <div class="card-body py-3 mt-1">
+            <!-- Product Title -->
+            <h5 class="card-title fw-semibold mb-1">{{ product.name }}</h5>
+
+            <!-- Product Price -->
+            <div class="d-flex align-items-center gap-3 mb-2">
+              <span class="text-success fw-bold fs-5">${{ product.price }}</span>
+            </div>
+            <!-- Wishlist -->
+            <button
+              class="btn btn-danger add-to-cart-btn-desktop w-100 position-absolute top-1 start-0 py-2 d-flex align-items-center justify-content-center gap-2"
+              (click)="toggleWishlist(product._id)"
+            >
+              <lucide-angular name="heart" size="18"></lucide-angular>
+              Remove item
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (products().length >= 9) {
+      <nav class="mt-5">
+        <ul class="pagination gap-2 align-items-center justify-content-center">
+          <li class="page-item cursor-pointer" [class.disabled]="currentPage() === 1">
+            <a
+              class="page-link d-flex align-items-center justify-content-center"
+              (click)="changePage(currentPage() - 1)"
+              style="width: 40px; height: 40px"
+            >
+              <!-- <lucide-icon name="chevrons-left" size="16"></lucide-icon> -->
+            </a>
+          </li>
+
+          @for (page of visiblePages(); track page) {
+            <li class="page-item cursor-pointer" [class.active]="currentPage() === page">
+              <a
+                class="page-link d-flex align-items-center justify-content-center"
+                (click)="changePage(page)"
+                style="width: 40px; height: 40px"
+              >
+                {{ page }}
+              </a>
+            </li>
+          }
+
+          <li class="page-item cursor-pointer" [class.disabled]="currentPage() === totalPages()">
+            <a
+              class="page-link d-flex align-items-center justify-content-center"
+              (click)="changePage(currentPage() + 1)"
+              style="width: 40px; height: 40px"
+            >
+              <!-- <lucide-icon name="chevrons-right" size="16"></lucide-icon> -->
+            </a>
+          </li>
+        </ul>
+      </nav>
+    }
+  }
+</section>

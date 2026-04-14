@@ -13,6 +13,7 @@ import {
   Ellipsis,
   LayoutDashboard,
   LucideAngularModule,
+  Menu,
   Package,
   Pencil,
   Plus,
@@ -22,6 +23,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { OrderPipe } from './dashboard/order.pipe';
 import { SharedModule } from '../../shared/shared-module';
 import { provideToastr } from 'ngx-toastr';
+import { ɵInternalFormsSharedModule } from '@angular/forms';
 
 @NgModule({
   declarations: [Dashboard, Products, DashboardLayout, Orders, OrderPipe],
@@ -39,9 +41,11 @@ import { provideToastr } from 'ngx-toastr';
       Ellipsis,
       Pencil,
       Plus,
+      Menu,
     }),
     NgApexchartsModule,
     SharedModule,
+    ɵInternalFormsSharedModule,
   ],
   providers: [
     provideToastr({
