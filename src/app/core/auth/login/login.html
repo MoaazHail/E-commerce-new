@@ -8,10 +8,10 @@
   <!-- Form Title -->
   <h1 class="fw-bold mb-3">Login</h1>
 
-  <!-- Username Field -->
+  <!-- Email Field -->
   <div class="w-100">
     <!-- Label -->
-    <label for="username" class="input-label-required mb-2 form-label fw-bold">Username:</label>
+    <label for="username" class="input-label-required mb-2 form-label fw-bold">email:</label>
     <div class="input-group">
       <div class="p-2 rounded-2 bg-light d-flex align-items-center justify-content-center">
         <lucide-icon name="at-sign" size="20"></lucide-icon>
@@ -19,17 +19,17 @@
       <input
         type="text"
         class="form-control"
-        placeholder="Enter your Username"
-        formControlName="username"
+        placeholder="Enter your email"
+        formControlName="email"
       />
     </div>
 
     <!-- Error Message -->
     @if (
-      loginForm.get('username')?.invalid &&
-      (loginForm.get('username')?.dirty || loginForm.get('username')?.touched)
+      loginForm.get('email')?.invalid &&
+      (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)
     ) {
-      <small class="text-danger ms-5">Username is required.</small>
+      <small class="text-danger ms-5">email is required.</small>
     }
   </div>
 
@@ -38,9 +38,6 @@
     <!-- Label -->
     <label for="password" class="input-label-required mb-2 form-label fw-bold">Password:</label>
     <div class="input-group">
-      <div class="p-2 rounded-2 bg-light d-flex align-items-center justify-content-center">
-        <lucide-icon name="key-round" size="20"></lucide-icon>
-      </div>
       <div class="position-relative flex-grow-1">
         <input
           class="form-control pe-5"

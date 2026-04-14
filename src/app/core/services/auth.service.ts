@@ -2,8 +2,9 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { HEADER_API, BASE_API } from '../../lib/constants/api.constants';
+import { HEADER_API } from '../../lib/constants/api.constants';
 import { User } from '../../lib/types/user';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -14,9 +15,12 @@ export class AuthService {
   private _router = inject(Router);
 
   // Signals
-  private readonly _api: string = `${BASE_API}/users`;
+  private readonly _api: string = `${environment.apiUrl}/users`;
   token = signal<string | null>(localStorage.getItem('token'));
   isAuthenticated = computed(() => (this.token() ? true : false));
+
+  // Authorization
+  isAdmin = computed(() => (this.currentUser()?.role === 'admin' ? true : false));
 
   currentUser = signal<User | null>(null);
 
@@ -29,7 +33,7 @@ export class AuthService {
 
   // Register
   register(user: RegisterForm): Observable<any> {
-    return this._http.post(`${this._api}/add`, user, {
+    return this._http.post(`${this._api}/signup`, user, {
       headers: { ...HEADER_API },
     });
   }

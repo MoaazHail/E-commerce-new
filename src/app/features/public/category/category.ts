@@ -5,6 +5,7 @@ import { ProductService } from '../../../core/services/poduct.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../lib/types/product';
 import { CategoryService } from '../../../core/services/category.service';
+import { CartService } from '../../../core/services/cart.service';
 
 @Component({
   selector: 'app-category',
@@ -24,7 +25,7 @@ export class Category {
   private _categoryService = inject(CategoryService);
 
   // Inject Product
-  private _productService = inject(ProductService);
+  private _CartService = inject(CartService);
 
   // Inject Auth Service
   private _authService = inject(AuthService);
@@ -71,7 +72,7 @@ export class Category {
     }
     this.categorySlogan = this._route.snapshot.paramMap.get('slog');
 
-    this.getProduct();
+    // this.getProduct();
   }
 
   // Render The Product Details
@@ -92,7 +93,7 @@ export class Category {
   }
 
   // Redirect To Product Details Page
-  productDetails(id: number) {
+  productDetails(id: string) {
     // Add callback Param To url
     this.callback.set(this._router.url);
     this._router.navigate(['products', id], {
@@ -103,7 +104,7 @@ export class Category {
   }
 
   // Add This Product To The Cart
-  addToCart(id: number) {
+  addToCart(id: string) {
     if (this._authService.isAuthenticated()) {
       this.addToUserCart(id);
       // Toaster
@@ -118,8 +119,8 @@ export class Category {
   }
 
   // Add The Product To The Cart <Guest>
-  addToGuestCart(id: number) {
-    const product = this.products().find((p) => p.id === id);
+  addToGuestCart(id: string) {
+    const product = this.products().find((p) => p._id === id);
     if (!product) return;
 
     const quantity = this.quantity();
@@ -127,7 +128,7 @@ export class Category {
     this.productsCart.update((cart) => {
       const safeCart = Array.isArray(cart) ? cart : [];
 
-      const index = safeCart.findIndex((item) => item.product?.id === id);
+      const index = safeCart.findIndex((item) => item.product?._id === id);
 
       if (index !== -1) {
         return [...safeCart];
@@ -139,8 +140,8 @@ export class Category {
   }
 
   // Add The Product To The Cart <User Has Token>
-  addToUserCart(id: number) {
-    this._productService.addToCart(id).subscribe({
+  addToUserCart(id: string) {
+    this._CartService.addToCart(id).subscribe({
       next: (_) => {
         //Add Toaster To UX
         this._toaster.success(`product added to cart!`, 'Success');

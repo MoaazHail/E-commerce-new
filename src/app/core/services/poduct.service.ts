@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { BASE_API, HEADER_API } from '../../lib/constants/api.constants';
+import { inject, Injectable, signal } from '@angular/core';
+import { HEADER_API } from '../../lib/constants/api.constants';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -9,39 +11,71 @@ import { Observable } from 'rxjs';
 export class ProductService {
   // Http Client
   private _http = inject(HttpClient);
+  private _authService = inject(AuthService);
+  private _apiUrl = `${environment.apiUrl}/products`;
 
   getProducts(): Observable<any> {
-    return this._http.get(`${BASE_API}/products`);
+    return this._http.get(this._apiUrl);
   }
 
-  // Get Product Using skip , limit
-  getAllProducts(skip: number, limit: number): Observable<any> {
-    return this._http.get(`${BASE_API}/products?limit=${limit}&skip=${skip}`);
+  // Get Product Using page , limit
+  getAllProducts(page: number, limit: number): Observable<any> {
+    return this._http.get(`${this._apiUrl}?limit=${limit}&page=${page}`); // ?page=3&limit=12
   }
 
   // Get Product Using skip , limit
   getTodays(): Observable<any> {
-    return this._http.get(`${BASE_API}/products?limit=12&skip=12`);
+    return this._http.get(`${this._apiUrl}?page=3&limit=12`);
   }
 
   // Get Product By ID
-  getProductById(id: number): Observable<any> {
-    return this._http.get(`${BASE_API}/products/${id}`);
+  getProductById(id: string): Observable<any> {
+    return this._http.get(`${this._apiUrl}/${id}`);
   }
 
-  // Add To Cart
-  addToCart(id: number, quantity?: number): Observable<any> {
-    if (!quantity) {
-      quantity = 1;
-    }
+  // searchProduct(search: string): Observable<any> {
+  //   return this._http.get(`${this._apiUrl}/search?q=${search}`);
+  // }
+
+  addProduct(form: any): Observable<any> {
     return this._http.post(
-      `${BASE_API}/carts/add`,
-      { userId: 1, products: [{ id, quantity }] }, // UserId Must Be Take On NgRX Store !!?
-      { headers: { ...HEADER_API } },
+      `${this._apiUrl}`,
+      {
+        name: form.name,
+        description: form.name,
+        price: form.price,
+        category: form.category,
+        stock: form.stock,
+      },
+      { headers: { ...HEADER_API, Authorization: `Bearer ${this._authService.token()}` } },
     );
   }
 
-  searchProduct(search: string): Observable<any> {
-    return this._http.get(`${BASE_API}/products/search?q=${search}`);
+  updateProduct(form: any, productId: string): Observable<any> {
+    return this._http.patch(
+      `${this._apiUrl}/${productId}`,
+      {
+        name: form.name,
+        description: form.description,
+        price: form.price,
+        category: form.category,
+        stock: form.stock,
+      },
+      { headers: { ...HEADER_API, Authorization: `Bearer ${this._authService.token()}` } },
+    );
+  }
+
+  // Delete A Product
+  deleteProduct(productId: string): Observable<any> {
+    return this._http.delete(`${this._apiUrl}/${productId}`, {
+      headers: { ...HEADER_API, Authorization: `Bearer ${this._authService.token()}` },
+    });
+  }
+
+  // Search By Product Name
+  searchProduct(keyword: string | null, page?: number, limit?: number): Observable<any> {
+    return this._http.get(`${this._apiUrl}/search?keyword=${keyword}&page=${page}&limit=${limit}`, {
+      headers: { ...HEADER_API, Authorization: `Bearer ${this._authService.token()}` },
+    });
   }
 }

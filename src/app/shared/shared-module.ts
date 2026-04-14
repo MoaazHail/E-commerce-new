@@ -15,6 +15,7 @@ import {
   Send,
   Facebook,
   Instagram,
+  TriangleAlert,
 } from 'lucide-angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Navbar } from './layout/navbar/navbar';
@@ -23,10 +24,10 @@ import { Skeleton } from './skeletons/skeleton/skeleton';
 import { Modal } from './modal/modal';
 import { AuthLayout } from './layout/auth-layout/auth-layout';
 import { Footer } from './layout/footer/footer';
-import { Twitter } from 'lucide-angular/src/icons';
+import { ProductForm } from './modal/components/product-form/product-form';
 
 @NgModule({
-  declarations: [InputField, Navbar, Modal, AuthLayout, Footer],
+  declarations: [InputField, Navbar, Modal, AuthLayout, Footer, ProductForm],
   imports: [
     CommonModule,
     LucideAngularModule.pick({
@@ -40,6 +41,7 @@ import { Twitter } from 'lucide-angular/src/icons';
       Search,
       ShoppingBag,
       Send,
+      TriangleAlert,
     }),
     ReactiveFormsModule,
     AppRoutingModule,

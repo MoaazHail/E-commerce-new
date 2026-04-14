@@ -4,12 +4,13 @@ import { Cart } from './features/public/cart/cart';
 import { Home } from './features/public/home/home';
 import { userGuard } from './core/guards/auth.guard';
 import { ProductDetails } from './features/public/product-details/product-details';
-import { AuthLayout } from './shared/layout/auth-layout/auth-layout';
 import { Category } from './features/public/category/category';
 import { NotFound } from './features/public/not-found/not-found';
 import { Contact } from './features/public/contact/contact';
 import { MainLayout } from './shared/layout/main-layout/main-layout';
 import { About } from './features/public/about/about';
+import { Order } from './features/public/order/order';
+import { Wishlist } from './features/public/wishlist/wishlist';
 
 const routes: Routes = [
   // Use empty string for the default landing page
@@ -17,12 +18,14 @@ const routes: Routes = [
     path: '',
     component: MainLayout,
     children: [
-      { path: '', component: Home, pathMatch: 'full' },
+      { path: '', component: Home, pathMatch: 'prefix' },
       { path: 'cart', component: Cart, pathMatch: 'full' },
       { path: 'products/:id', component: ProductDetails, pathMatch: 'full' },
       { path: 'category/:slog', component: Category, pathMatch: 'full' },
       { path: 'contact', component: Contact, pathMatch: 'full' },
       { path: 'about', component: About, pathMatch: 'full' },
+      { path: 'orders', component: Order, pathMatch: 'full', canActivate: [userGuard] },
+      { path: 'wishlist', component: Wishlist, pathMatch: 'full', canActivate: [userGuard] },
     ],
   },
 

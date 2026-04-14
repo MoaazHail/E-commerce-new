@@ -12,17 +12,22 @@ export const userGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot,
 ) => {
+  const toastrService = inject(ToastrService);
   const authService = inject(AuthService);
-  return !authService.isAuthenticated();
+  if (!authService.isAuthenticated()) {
+    toastrService.error('Access Denied: Users Only', 'Restricted Area');
+  }
+  return authService.isAuthenticated();
 };
 
 export const adminGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot,
 ) => {
+  const toastrService = inject(ToastrService);
+
   const authService = inject(AuthService);
   const router = inject(Router);
-  const toastr = inject(ToastrService);
 
   // Assuming your authService has a user signal or method
   const user = authService.currentUser(); // Adjust based on your actual signal name
@@ -32,7 +37,7 @@ export const adminGuard: CanActivateFn = (
   }
 
   // If not admin, show a warning and redirect
-  toastr.error('Access Denied: Admins Only', 'Restricted Area');
+  toastrService.error('Access Denied: Admins Only', 'Restricted Area');
   router.navigate(['/']);
   return false;
 };

@@ -1,7 +1,7 @@
 <header class="bg-white shadow-sm p-3 mb-4">
   <div class="d-flex justify-content-between aligh-item-center">
     <h1>Products</h1>
-    <button class="btn btn-md btn-dark" (click)="openAdd.set(true)">
+    <button class="btn btn-md btn-dark" (click)="onAdd.set(!onAdd())">
       <lucide-icon name="plus" /> Add Product
     </button>
   </div>
@@ -10,20 +10,18 @@
 
 <!-- Cards -->
 <div class="d-flex justify-content-center aligh-item-center gap-4">
-  @for (card of productStats(); track $index) {
-    <div
-      class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4"
-      style="width: 200px"
-    >
-      <p class="mb-4">{{ card.title }}</p>
+  <div
+    class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4"
+    style="width: 200px"
+  >
+    <p class="mb-4 fs-4 fw-bold">Total Products</p>
 
-      <h2>{{ card.count }}</h2>
-    </div>
-  }
+    <h2 class="text-center">{{ pagination()?.totalItems }}</h2>
+  </div>
 </div>
 
 <div
-  class="d-flex justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4"
+  class="d-flex flex-column justify-content-center aligh-item-center gap-4 bg-white shadow-sm p-3 rounded-4 border m-4 overflow-scroll"
 >
   <table class="table table-hover">
     <thead>
@@ -36,9 +34,9 @@
       </tr>
     </thead>
     <tbody>
-      @for (product of products(); track product.id) {
+      @for (product of products(); track product._id) {
         <tr class="">
-          <th scope="row">{{ product.title }}</th>
+          <th scope="row">{{ product.name }}</th>
           <td>{{ product.category }}</td>
           <td>$ {{ product.price }}</td>
           <td>{{ product.stock }}</td>
@@ -46,25 +44,26 @@
             <div
               class="p-2 bg-light rounded-circle cursor-pointer text-center"
               style="width: 35px; height: 35px"
-              (click)="toggleMenu(product.id, $event)"
+              (click)="toggleMenu(product._id, $event)"
             >
               <lucide-icon name="ellipsis" size="18" />
             </div>
 
-            @if (activeMenuId() === product.id) {
+            @if (activeMenuId() === product._id) {
               <div
-                class="action-menu shadow-lg border rounded-3 bg-white p-2 animate__animated animate__fadeIn"
+                class="action-menu position-absolute shadow-lg border rounded-3 bg-white p-2 animate__animated animate__fadeIn"
+                style="z-index: 600 !important"
               >
                 <button
                   class="btn btn-sm btn-light w-100 text-start d-flex align-items-center gap-2 mb-1"
-                  (click)="onUpdate(product.id)"
+                  (click)="onUpdate.set(true)"
                 >
                   <lucide-icon name="pencil" size="14" class="text-primary" />
                   Update
                 </button>
                 <button
                   class="btn btn-sm btn-light w-100 text-start d-flex align-items-center gap-2 text-danger"
-                  (click)="onDelete(product.id)"
+                  (click)="onDelete.set(true)"
                 >
                   <lucide-icon name="trash-2" size="14" />
                   Delete
@@ -78,12 +77,27 @@
   </table>
 </div>
 
-@if (openUpdate()) {
-  <app-modal modalType="update" [id]="productId()" />
+@if (onUpdate()) {
+  <app-modal
+    modalType="update"
+    [id]="productId()"
+    page="dashboard/product"
+    (onConfirm)="triggerRefresh()"
+  />
 }
-@if (openDelete()) {
-  <app-modal modalType="delete" [id]="productId()" />
+@if (onDelete()) {
+  <app-modal
+    modalType="delete"
+    [id]="productId()"
+    page="dashboard/product"
+    (onDelete)="triggerRefresh()"
+  />
 }
-@if (openAdd()) {
-  <app-modal modalType="add" [id]="productId()" />
+@if (onAdd()) {
+  <app-modal
+    modalType="add"
+    [id]="productId()"
+    page="dashboard/product"
+    (onConfirm)="triggerRefresh()"
+  />
 }

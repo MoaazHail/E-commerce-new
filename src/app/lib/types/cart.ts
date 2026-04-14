@@ -11,13 +11,21 @@ export interface ProductCart {
   total: number;
 }
 export interface UserCart {
-  discountedTotal: number;
-  id: number;
-  products: ProductCart[];
-  total: number;
-  totalProducts: number;
-  totalQuantity: number;
-  userId: number;
+  createdAt: string;
+  deletedAt: null;
+  items: [
+    {
+      price: number;
+      product: Product;
+      quantity: number;
+      _id: string;
+    },
+  ];
+  totalPrice: number;
+  updatedAt: string;
+  user: string;
+  __v: number;
+  _id: string;
 }
 
 export interface GustCart {
